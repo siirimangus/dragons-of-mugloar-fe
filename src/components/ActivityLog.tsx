@@ -11,7 +11,7 @@ export function ActivityLog({ lastResult, log }: Props) {
     <section className={styles.activity} aria-labelledby="activity-title">
       <h2 id="activity-title">Activity</h2>
       <p role="status" className={lastResult?.success === false ? styles.fail : styles.ok}>
-        {lastResult?.text}
+        {lastResult && <span key={log[0]?.id}>{lastResult.text}</span>}
       </p>
       {log.length === 0 ? (
         <p className={styles.empty}>Nothing has happened yet.</p>

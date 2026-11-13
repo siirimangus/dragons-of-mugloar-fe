@@ -16,6 +16,30 @@ describe('ActivityLog', () => {
     expect(screen.getByRole('status')).toBeEmptyDOMElement();
   });
 
+  it('re-announces a repeated result with identical text', () => {
+    const result = { text: 'You bought Healing potion.', success: true };
+    const { rerender } = render(
+      <ActivityLog
+        lastResult={result}
+        log={[{ id: 1, turn: 1, success: true, text: 'Bought: Healing potion' }]}
+      />,
+    );
+    const before = screen.getByRole('status').firstElementChild;
+    rerender(
+      <ActivityLog
+        lastResult={{ ...result }}
+        log={[
+          { id: 2, turn: 2, success: true, text: 'Bought: Healing potion' },
+          { id: 1, turn: 1, success: true, text: 'Bought: Healing potion' },
+        ]}
+      />,
+    );
+    const after = screen.getByRole('status').firstElementChild;
+    expect(before).not.toBeNull();
+    expect(after).not.toBe(before);
+    expect(after).toHaveTextContent('You bought Healing potion.');
+  });
+
   it('lists recent turns, newest first', () => {
     render(
       <ActivityLog
