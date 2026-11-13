@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { configure, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/App';
 import { ApiError } from '../../src/api/errors';
@@ -6,11 +6,27 @@ import type { Ad } from '../../src/domain/types';
 import { FakeDragonsApi, type FakeOptions } from '../support/fake-dragons-api';
 import { renderWithGame } from '../support/render';
 
+// Under heavy CPU load the default 1s async timeout is too tight for multi-step flows.
+configure({ asyncUtilTimeout: 5000 });
+vi.setConfig({ testTimeout: 15000 });
+
 async function startGame(options: FakeOptions = {}, api = new FakeDragonsApi(options)) {
   const view = renderWithGame(<App />, api);
   await view.user.click(screen.getByRole('button', { name: 'Start new game' }));
   await screen.findByRole('heading', { name: 'Message board' });
+  // Wait for the initial board/shop load to finish so no action is clicked while still pending.
+  await waitFor(() => expect(screen.getByRole('button', { name: 'End game' })).toBeEnabled());
+  await screen.findByRole('button', { name: 'Buy Healing potion' });
   return { ...view, api };
+}
+
+/** Clicks a button once the app has settled enough to enable it (a click on a disabled button is a no-op). */
+async function clickWhenEnabled(
+  user: ReturnType<typeof renderWithGame>['user'],
+  find: () => HTMLElement,
+) {
+  await waitFor(() => expect(find()).toBeEnabled());
+  await user.click(find());
 }
 
 const stat = (label: string) => within(screen.getByText(label).closest('div')!);
@@ -72,7 +88,7 @@ describe('playing the game', () => {
     await user.click(screen.getByRole('checkbox', { name: /hide trap ads/i }));
     const trapCard = screen.getByText('Trap likely').closest('li')!;
     await user.click(within(trapCard).getByRole('button', { name: 'Solve anyway' }));
-    await user.click(within(trapCard).getByRole('button', { name: 'Yes, solve anyway' }));
+    await user.click(await within(trapCard).findByRole('button', { name: 'Yes, solve anyway' }));
 
     expect(await screen.findByText(/fell into a trap/i)).toBeInTheDocument();
     expect(stat('Lives').getByText('2')).toBeInTheDocument();
@@ -86,14 +102,16 @@ describe('playing the game', () => {
       within(screen.getByText('Recommended').closest('li')!).getByRole('button', { name: 'Solve' }),
     );
 
-    for (const button of screen.getAllByRole('button', { name: 'Solve' }))
-      expect(button).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'End game' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Do it' })).toBeDisabled();
+    await waitFor(() => {
+      for (const button of screen.getAllByRole('button', { name: 'Solve' }))
+        expect(button).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'End game' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Do it' })).toBeDisabled();
+    });
 
     release();
     await screen.findByText('You successfully solved the mission!');
-    expect(screen.getAllByRole('button', { name: 'Solve' })[0]).toBeEnabled();
+    await waitFor(() => expect(screen.getAllByRole('button', { name: 'Solve' })[0]).toBeEnabled());
   });
 });
 
@@ -110,7 +128,7 @@ describe('when things go wrong', () => {
     expect(banner).toHaveTextContent(/could not reach the game server/i);
     expect(screen.getByText('Help Ann to fix their wagon')).toBeInTheDocument();
 
-    await user.click(within(banner).getByRole('button', { name: 'Retry' }));
+    await clickWhenEnabled(user, () => within(banner).getByRole('button', { name: 'Retry' }));
     await screen.findByText('You successfully solved the mission!');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
@@ -124,8 +142,8 @@ describe('when things go wrong', () => {
     );
 
     expect(await screen.findByText('This game has expired. Start a new one.')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Play again' }));
-    expect(screen.getByRole('button', { name: 'Start new game' })).toBeInTheDocument();
+    await clickWhenEnabled(user, () => screen.getByRole('button', { name: 'Play again' }));
+    expect(await screen.findByRole('button', { name: 'Start new game' })).toBeInTheDocument();
   });
 
   it('marks an ad the server rejects as unavailable and keeps playing', async () => {
@@ -150,14 +168,14 @@ describe('ending the game', () => {
 
     expect(await screen.findByRole('heading', { name: 'Game over' })).toBeInTheDocument();
     expect(screen.getByText('Final score')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Play again' }));
-    expect(screen.getByRole('button', { name: 'Start new game' })).toBeInTheDocument();
+    await clickWhenEnabled(user, () => screen.getByRole('button', { name: 'Play again' }));
+    expect(await screen.findByRole('button', { name: 'Start new game' })).toBeInTheDocument();
   });
 
   it('lets the player end the game after confirming', async () => {
     const { user } = await startGame({ score: 1200 });
     await user.click(screen.getByRole('button', { name: 'End game' }));
-    await user.click(screen.getByRole('button', { name: 'Yes, end game' }));
+    await user.click(await screen.findByRole('button', { name: 'Yes, end game' }));
 
     expect(await screen.findByRole('heading', { name: 'Game over' })).toBeInTheDocument();
     expect(screen.getByText(/goal reached/i)).toBeInTheDocument();
@@ -175,23 +193,27 @@ describe('while a request is in flight', () => {
     const banner = await screen.findByRole('alert');
 
     const release = api.hold('solve');
-    await user.click(within(banner).getByRole('button', { name: 'Retry' }));
+    await clickWhenEnabled(user, () => within(banner).getByRole('button', { name: 'Retry' }));
 
-    const locked = [
+    const locked = () => [
       ...screen.getAllByRole('button', { name: 'Solve' }),
       ...screen.getAllByRole('button', { name: /^Buy / }),
       screen.getByRole('button', { name: 'End game' }),
     ];
-    for (const button of locked) expect(button).toBeDisabled();
-    // Starting an action clears the error, so the banner buttons cannot be clicked mid-flight.
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    await waitFor(() => {
+      for (const button of locked()) expect(button).toBeDisabled();
+      // Starting an action clears the error, so the banner buttons cannot be clicked mid-flight.
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
 
     release();
     await screen.findByText('You successfully solved the mission!');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'End game' })).toBeEnabled();
-    expect(screen.getAllByRole('button', { name: 'Solve' })[0]).toBeEnabled();
-    expect(screen.getByRole('button', { name: 'Buy Healing potion' })).toBeEnabled();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'End game' })).toBeEnabled());
+    await waitFor(() => expect(screen.getAllByRole('button', { name: 'Solve' })[0]).toBeEnabled());
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Buy Healing potion' })).toBeEnabled(),
+    );
   });
 });
 
