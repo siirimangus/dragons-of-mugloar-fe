@@ -42,7 +42,7 @@ export function AdBoard({ ads, advisedAdId, unavailableAdIds, status, disabled, 
           <Illustration slot="empty-board" />
           <p>No messages right now: buy a potion to wait for new ones.</p>
         </div>
-      ) : (
+      ) : shown.length > 0 ? (
         <ul className={styles.list}>
           {shown.map((ad, index) => (
             <AdCard
@@ -56,7 +56,7 @@ export function AdBoard({ ads, advisedAdId, unavailableAdIds, status, disabled, 
             />
           ))}
         </ul>
-      )}
+      ) : null}
     </section>
   );
 }

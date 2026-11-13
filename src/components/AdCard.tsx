@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { Ad, AdInsight, Risk } from '../domain/types';
 import styles from './AdCard.module.css';
 import { formatPercent, formatValue, pluralize } from './format';
@@ -21,6 +21,7 @@ const RISK_LABEL: Record<Risk, string> = {
 export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolve }: Props) {
   const [confirming, setConfirming] = useState(false);
   const blocked = disabled || unavailable;
+  const messageId = useId();
   const solveRef = useRef<HTMLButtonElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
   const wasConfirming = useRef(false);
@@ -43,7 +44,9 @@ export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolv
         {insight.trap && <span className={styles.trapBadge}>Trap likely</span>}
         {unavailable && <span className={styles.gone}>No longer available</span>}
       </div>
-      <p className={styles.message}>{ad.message}</p>
+      <p id={messageId} className={styles.message}>
+        {ad.message}
+      </p>
       <dl className={styles.facts}>
         <div>
           <dt>Reward</dt>
@@ -90,7 +93,12 @@ export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolv
           }}
         >
           <p>You will probably lose a life. Solve it anyway?</p>
-          <button type="button" onClick={() => onSolve(ad.adId)} disabled={blocked}>
+          <button
+            type="button"
+            aria-describedby={messageId}
+            onClick={() => onSolve(ad.adId)}
+            disabled={blocked}
+          >
             Yes, solve anyway
           </button>
           <button
@@ -106,6 +114,7 @@ export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolv
         <div className={styles.actions}>
           <button
             ref={solveRef}
+            aria-describedby={messageId}
             type="button"
             onClick={() => (insight.trap ? setConfirming(true) : onSolve(ad.adId))}
             disabled={blocked}

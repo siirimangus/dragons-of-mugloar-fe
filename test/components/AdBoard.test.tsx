@@ -112,6 +112,11 @@ describe('AdBoard', () => {
     expect(screen.getByText(/loading messages/i)).toBeInTheDocument();
   });
 
+  it('renders no empty list while loading with zero ads', () => {
+    renderBoard({ ads: [], status: 'loading' });
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
+  });
+
   it('renders two ads that share an adId without key warnings', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     renderBoard({

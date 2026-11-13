@@ -56,6 +56,13 @@ describe('AdCard', () => {
     expect(onSolve).toHaveBeenCalledWith('good');
   });
 
+  it('describes the Solve button with the ad message', () => {
+    renderCard();
+    expect(screen.getByRole('button', { name: 'Solve' })).toHaveAccessibleDescription(
+      'Help Ann to fix their wagon',
+    );
+  });
+
   it('shows the recommended badge', () => {
     renderCard({ recommended: true });
     expect(screen.getByText('Recommended')).toBeInTheDocument();
