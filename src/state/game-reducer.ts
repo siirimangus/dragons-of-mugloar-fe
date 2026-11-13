@@ -116,7 +116,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           turn: result.turn,
         },
         phase: result.lives <= 0 ? 'finished' : state.phase,
-        boardStatus: 'loading',
+        boardStatus: result.lives <= 0 ? state.boardStatus : 'loading',
         unavailableAdIds: [],
         lastResult: { text: result.message, success: result.success },
         stats: {

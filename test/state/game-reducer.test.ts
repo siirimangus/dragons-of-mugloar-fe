@@ -104,6 +104,22 @@ describe('solved', () => {
     expect(state.phase).toBe('finished');
   });
 
+  it('keeps the board status when the solve ends the game, and reloads it otherwise', () => {
+    const lost = gameReducer(started(), {
+      type: 'solved',
+      adId: 'a1',
+      result: solveResult({ success: false, lives: 0 }),
+    });
+    expect(lost.phase).toBe('finished');
+    expect(lost.boardStatus).toBe('ready');
+    const alive = gameReducer(started(), {
+      type: 'solved',
+      adId: 'a1',
+      result: solveResult({ lives: 1 }),
+    });
+    expect(alive.boardStatus).toBe('loading');
+  });
+
   it('does not mutate the previous state', () => {
     const before = started();
     const snapshot = JSON.stringify(before);
