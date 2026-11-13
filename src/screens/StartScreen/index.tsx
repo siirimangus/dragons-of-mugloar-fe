@@ -1,6 +1,6 @@
-import logo from '../../assets/logo.png';
 import { ErrorBanner } from '../../components/ErrorBanner';
 import { Illustration } from '../../components/Illustration';
+import { Logo } from '../../components/Logo';
 import { useGameActions, useGameState } from '../../state/game-context';
 import styles from './StartScreen.module.css';
 
@@ -11,7 +11,7 @@ export function StartScreen() {
     return (
         <main className={styles.start}>
             <h1 className={styles.title}>
-                <img src={logo} alt="Dragons of Mugloar" width={1200} height={195} />
+                <Logo className={styles.logo} />
             </h1>
             <Illustration slot="hero" />
             <ul className={styles.how}>

@@ -83,7 +83,7 @@ src/
   main.tsx, App.tsx     mount; App shows the start, game or summary screen by game phase
   screens/              StartScreen/, GameScreen/, SummaryScreen/
   components/           GameHeader/, GoalBar/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
-                        Advisor/, ActivityLog/, ErrorBanner/, Illustration/ (placeholder slots)
+                        Advisor/, ActivityLog/, ErrorBanner/, Logo/, Illustration/ (artwork slots)
   state/                game-reducer.ts, game-context.ts, GameProvider.tsx, use-game-actions.ts
   domain/               types, tuning, odds, value, traps, sort, advisor, shop (pure TypeScript)
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
@@ -220,5 +220,5 @@ The images and the favicon are artwork from the Dragons of Mugloar game. They ar
 
 - **"Missing Zelda" poster** (`src/assets/zelda-on-paper.webp`), shown on the start screen, from `https://dragonsofmugloar.com/assets/zeldaOnPaper.png`. The original is a 1567 x 1427 PNG of 1.5 MB; the copy here is resized to 1200 px wide and converted to WebP (about 270 KB, transparency kept). Its alt text repeats the words written on the poster.
 - **Dragon sketch** (`src/assets/dragon-in-barn.webp`), shown on the summary screen, from `https://dragonsofmugloar.com/assets/dragonInBarnOnPaper.png`. The original is a 2100 x 1500 PNG of 5.2 MB; the copy here is resized to 1200 px wide and converted to WebP (about 220 KB, transparency kept).
-- **Title logo** (`src/assets/logo.png`), from `https://dragonsofmugloar.com/assets/logo.png`, used unchanged (1200 x 195, 57 KB). It is the page's `h1`, with "Dragons of Mugloar" as its alt text.
+- **Title logo** (`src/assets/logo.png`), from `https://dragonsofmugloar.com/assets/logo.png`, used unchanged (1200 x 195, 57 KB). It is the `h1` on both the start screen and the game screen's header, with "Dragons of Mugloar" as its alt text.
 - **Favicon** (`public/favicon.png`), from `https://dragonsofmugloar.com/assets/favicon.png`, used unchanged (64 x 64, 9.5 KB) and linked from `index.html`.

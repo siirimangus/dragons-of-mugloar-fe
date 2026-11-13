@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Session } from '../../domain/types';
 import { GoalBar } from '../GoalBar';
+import { Logo } from '../Logo';
 import styles from './GameHeader.module.css';
 
 type Props = {
@@ -44,7 +45,7 @@ export function GameHeader({ session, disabled, onEndGame, focusTitleOnMount = f
         <header className={styles.header}>
             <div className={styles.top}>
                 <h1 ref={titleRef} tabIndex={-1} className={styles.title}>
-                    Dragons of Mugloar
+                    <Logo className={styles.logo} />
                 </h1>
                 {confirming ? (
                     <div

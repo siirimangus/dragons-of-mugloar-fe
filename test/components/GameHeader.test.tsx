@@ -8,6 +8,17 @@ const session = makeSession({ score: 1240, gold: 310, lives: 3, level: 4, turn: 
 const stat = (label: string) => within(screen.getByText(label).closest('div')!);
 
 describe('GameHeader', () => {
+    it('uses the logo as the page title', () => {
+        render(<GameHeader session={session} disabled={false} onEndGame={() => undefined} />);
+        const heading = screen.getByRole('heading', { level: 1 });
+        // The logo is the heading's content, so its alt text is the heading's name.
+        expect(heading).toHaveAccessibleName('Dragons of Mugloar');
+        expect(within(heading).getByRole('img', { name: 'Dragons of Mugloar' })).toHaveAttribute(
+            'src',
+            expect.stringMatching(/logo.*\.png$/),
+        );
+    });
+
     it('shows score, gold, lives, level and turn', () => {
         render(<GameHeader session={session} disabled={false} onEndGame={() => undefined} />);
         expect(stat('Score').getByText('1240')).toBeInTheDocument();

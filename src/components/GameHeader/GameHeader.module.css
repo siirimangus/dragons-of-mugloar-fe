@@ -18,7 +18,14 @@
 }
 
 .title {
-    font-size: var(--font-size-large);
+    margin: 0;
+}
+
+.logo {
+    display: block;
+    width: auto;
+    height: 2.25rem;
+    max-width: 100%;
 }
 
 .confirm {
