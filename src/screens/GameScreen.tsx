@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityLog } from '../components/ActivityLog';
+import { ActivityLog, LastResultStatus } from '../components/ActivityLog';
 import { Advisor } from '../components/Advisor';
 import { AdBoard } from '../components/AdBoard';
 import { ErrorBanner } from '../components/ErrorBanner';
@@ -70,6 +70,9 @@ export function GameScreen() {
             </button>
           ))}
         </nav>
+        <div className={styles.status}>
+          <LastResultStatus lastResult={state.lastResult} firstLogId={state.log[0]?.id} />
+        </div>
         <div className={styles.grid}>
           <div className={styles.advisor} data-active={tab === 'board'}>
             <Advisor advice={advice} disabled={disabled} onDo={doAdvice} />
@@ -95,7 +98,7 @@ export function GameScreen() {
             />
           </div>
           <div className={styles.activity} data-active={tab === 'activity'}>
-            <ActivityLog lastResult={state.lastResult} log={state.log} />
+            <ActivityLog log={state.log} />
           </div>
         </div>
       </main>

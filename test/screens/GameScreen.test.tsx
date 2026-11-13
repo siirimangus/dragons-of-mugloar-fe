@@ -46,4 +46,15 @@ describe('GameScreen', () => {
     });
     release();
   });
+
+  it('keeps the last result outside any hidden tab panel', async () => {
+    const { user } = renderWithGame(<App />, new FakeDragonsApi());
+    await user.click(screen.getByRole('button', { name: 'Start new game' }));
+    await screen.findAllByRole('button', { name: 'Solve' });
+    await clickWhenEnabled(user, () => screen.getAllByRole('button', { name: 'Solve' })[0]!);
+    const status = await screen.findByRole('status');
+    await waitFor(() => expect(status).not.toBeEmptyDOMElement());
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(status.closest('[data-active]')).toBeNull();
+  });
 });

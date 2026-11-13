@@ -1,39 +1,29 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { ActivityLog } from '../../src/components/ActivityLog';
+import { ActivityLog, LastResultStatus } from '../../src/components/ActivityLog';
 
 describe('ActivityLog', () => {
   it('shows the last result in a live region', () => {
     render(
-      <ActivityLog lastResult={{ text: 'You failed on the mission!', success: false }} log={[]} />,
+      <LastResultStatus
+        lastResult={{ text: 'You failed on the mission!', success: false }}
+        firstLogId={undefined}
+      />,
     );
     const status = screen.getByRole('status');
     expect(status).toHaveTextContent('You failed on the mission!');
   });
 
   it('keeps the live region mounted when there is no result yet', () => {
-    render(<ActivityLog lastResult={null} log={[]} />);
+    render(<LastResultStatus lastResult={null} firstLogId={undefined} />);
     expect(screen.getByRole('status')).toBeEmptyDOMElement();
   });
 
   it('re-announces a repeated result with identical text', () => {
     const result = { text: 'You bought Healing potion.', success: true };
-    const { rerender } = render(
-      <ActivityLog
-        lastResult={result}
-        log={[{ id: 1, turn: 1, success: true, text: 'Bought: Healing potion' }]}
-      />,
-    );
+    const { rerender } = render(<LastResultStatus lastResult={result} firstLogId={1} />);
     const before = screen.getByRole('status').firstElementChild;
-    rerender(
-      <ActivityLog
-        lastResult={{ ...result }}
-        log={[
-          { id: 2, turn: 2, success: true, text: 'Bought: Healing potion' },
-          { id: 1, turn: 1, success: true, text: 'Bought: Healing potion' },
-        ]}
-      />,
-    );
+    rerender(<LastResultStatus lastResult={{ ...result }} firstLogId={2} />);
     const after = screen.getByRole('status').firstElementChild;
     expect(before).not.toBeNull();
     expect(after).not.toBe(before);
@@ -43,7 +33,6 @@ describe('ActivityLog', () => {
   it('lists recent turns, newest first', () => {
     render(
       <ActivityLog
-        lastResult={null}
         log={[
           { id: 2, turn: 2, success: false, text: 'Failed: Help Bob' },
           { id: 1, turn: 1, success: true, text: 'Solved: Help Ann' },
@@ -57,7 +46,7 @@ describe('ActivityLog', () => {
   });
 
   it('explains an empty log', () => {
-    render(<ActivityLog lastResult={null} log={[]} />);
+    render(<ActivityLog log={[]} />);
     expect(screen.getByText(/nothing has happened yet/i)).toBeInTheDocument();
   });
 });

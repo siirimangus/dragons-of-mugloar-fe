@@ -1,18 +1,25 @@
 import type { LastResult, LogEntry } from '../state/game-reducer';
 import styles from './ActivityLog.module.css';
 
-type Props = {
+type StatusProps = {
   readonly lastResult: LastResult | null;
-  readonly log: readonly LogEntry[];
+  /** Id of the newest log entry; changing it re-announces a repeated result. */
+  readonly firstLogId: number | undefined;
 };
 
-export function ActivityLog({ lastResult, log }: Props) {
+/** The always-mounted live region for the latest result. */
+export function LastResultStatus({ lastResult, firstLogId }: StatusProps) {
+  return (
+    <p role="status" className={lastResult?.success === false ? styles.fail : styles.ok}>
+      {lastResult && <span key={firstLogId}>{lastResult.text}</span>}
+    </p>
+  );
+}
+
+export function ActivityLog({ log }: { readonly log: readonly LogEntry[] }) {
   return (
     <section className={styles.activity} aria-labelledby="activity-title">
       <h2 id="activity-title">Activity</h2>
-      <p role="status" className={lastResult?.success === false ? styles.fail : styles.ok}>
-        {lastResult && <span key={log[0]?.id}>{lastResult.text}</span>}
-      </p>
       {log.length === 0 ? (
         <p className={styles.empty}>Nothing has happened yet.</p>
       ) : (
