@@ -247,7 +247,7 @@ describe('ending', () => {
         expect(gameReducer(started(), { type: 'reset' })).toEqual(initialState);
     });
 
-    it('keeps only the most recent log entries', () => {
+    it('keeps the whole log, newest first', () => {
         let state = started();
         for (let turn = 1; turn <= 40; turn++) {
             state = gameReducer(state, {
@@ -256,7 +256,8 @@ describe('ending', () => {
                 result: solveResult({ turn }),
             });
         }
-        expect(state.log).toHaveLength(30);
+        expect(state.log).toHaveLength(40);
         expect(state.log[0]?.turn).toBe(40);
+        expect(state.log[39]?.turn).toBe(1);
     });
 });

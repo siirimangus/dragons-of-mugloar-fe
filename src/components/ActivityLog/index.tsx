@@ -23,13 +23,21 @@ export function ActivityLog({ log }: { readonly log: readonly LogEntry[] }) {
             {log.length === 0 ? (
                 <p className={styles.empty}>Nothing has happened yet.</p>
             ) : (
-                <ol className={styles.list}>
-                    {log.map((entry) => (
-                        <li key={entry.id} className={entry.success ? styles.ok : styles.fail}>
-                            Turn {entry.turn}: {entry.text}
-                        </li>
-                    ))}
-                </ol>
+                <div
+                    role="group"
+                    aria-labelledby="activity-title"
+                    tabIndex={0}
+                    className={styles.scroll}
+                >
+                    {/* role="list" keeps the list semantics that some browsers drop with list-style: none */}
+                    <ul role="list" className={styles.list}>
+                        {log.map((entry) => (
+                            <li key={entry.id} className={entry.success ? styles.ok : styles.fail}>
+                                Turn {entry.turn}: {entry.text}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             )}
         </section>
     );

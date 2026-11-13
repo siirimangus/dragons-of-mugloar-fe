@@ -30,8 +30,8 @@ describe('ActivityLog', () => {
         expect(after).toHaveTextContent('You bought Healing potion.');
     });
 
-    it('lists recent turns, newest first', () => {
-        render(
+    it('lists every turn, newest first, without list numbers', () => {
+        const { container } = render(
             <ActivityLog
                 log={[
                     { id: 2, turn: 2, success: false, text: 'Failed: Help Bob' },
@@ -43,6 +43,23 @@ describe('ActivityLog', () => {
         expect(items).toHaveLength(2);
         expect(items[0]).toHaveTextContent('Turn 2: Failed: Help Bob');
         expect(items[1]).toHaveTextContent('Turn 1: Solved: Help Ann');
+        // An ordered list would show 1, 2, 3... markers that do not match the turn numbers.
+        expect(container.querySelector('ol')).toBeNull();
+        expect(container.querySelector('ul')).not.toBeNull();
+    });
+
+    it('shows a long log in a scrollable, keyboard-focusable area', () => {
+        const log = Array.from({ length: 100 }, (_, index) => ({
+            id: 100 - index,
+            turn: 100 - index,
+            success: true,
+            text: `Solved: Help ${100 - index}`,
+        }));
+        render(<ActivityLog log={log} />);
+        expect(screen.getAllByRole('listitem')).toHaveLength(100);
+        const scrollArea = screen.getByRole('group', { name: 'Activity' });
+        expect(scrollArea).toHaveAttribute('tabindex', '0');
+        expect(scrollArea).toContainElement(screen.getByRole('list'));
     });
 
     it('explains an empty log', () => {

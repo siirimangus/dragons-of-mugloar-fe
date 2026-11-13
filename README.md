@@ -46,7 +46,7 @@ The app talks to `https://dragonsofmugloar.com/api/v2` directly from the browser
 ## Playing the game
 
 1. **Start screen.** Read the three rules and press **Start new game**.
-2. **Game screen.** The header shows score, gold, lives, level and turn, plus a progress bar toward 1000 points. The message board lists the ads; the shop, the advisor and the activity log sit beside it.
+2. **Game screen.** The header shows score, gold, lives, level and turn, plus a progress bar toward 1000 points. The message board lists the ads; the shop, the advisor and the activity log sit beside it. The activity log keeps every turn of the game, newest first, and scrolls once it gets long.
 3. **Solve** an ad or **buy** an item. Every action takes one turn and the board refreshes afterwards. While a request is running, every action button is disabled.
 4. **Summary screen.** The game ends when you run out of lives or press **End game** (it asks for confirmation). You see the final score, whether the goal was reached, solved and failed counts, gold spent, turns and items bought, and can play again.
 
@@ -134,7 +134,7 @@ Latest run: 96.8% statements, 93.3% branches, 97.2% functions, 98.9% lines.
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Domain      | Odds, value, risk boundaries, trap detection, sorting and every advisor branch, mostly table-driven.                                                                                                                                            |
 | API         | zod schemas against fixtures recorded from the real API, strict Base64 and ROT13 decoding (including the ad id), retry and backoff, the HTTP client with a stub `fetch`.                                                                        |
-| State       | Every reducer action, immutability, log cap and order, and the async actions against the fake API.                                                                                                                                              |
+| State       | Every reducer action, immutability, the full log kept newest first, and the async actions against the fake API.                                                                                                                                 |
 | Components  | Cards, board sorting and filtering, shop affordability (including gold exactly equal to the cost), advisor, error banner, focus handling in confirmations.                                                                                      |
 | Integration | The whole app rendered against an in-memory fake API and played the way a user would: start, solve, buy, trap confirmation, goal, game over, errors and retry, an expired game, duplicate ad ids, and "everything locked while a request runs". |
 

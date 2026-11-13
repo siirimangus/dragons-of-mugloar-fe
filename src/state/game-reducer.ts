@@ -59,7 +59,6 @@ export type GameAction =
     | { type: 'gameEnded' }
     | { type: 'reset' };
 
-const LOG_LIMIT = 30;
 const EMPTY_STATS: Stats = { solved: 0, failed: 0, goldSpent: 0, itemsBought: 0 };
 
 export const initialState: GameState = {
@@ -84,7 +83,7 @@ function logged(
     text: string,
 ): Pick<GameState, 'log' | 'nextLogId'> {
     const entry: LogEntry = { id: state.nextLogId, turn, success, text };
-    return { log: [entry, ...state.log].slice(0, LOG_LIMIT), nextLogId: state.nextLogId + 1 };
+    return { log: [entry, ...state.log], nextLogId: state.nextLogId + 1 };
 }
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
