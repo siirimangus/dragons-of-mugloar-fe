@@ -1,0 +1,26 @@
+[
+  {
+    "adId": "SlhQQXhUeTA=",
+    "message": "SW5maWx0cmF0ZSBUaGUgRW1lcmFsZCBGb3JzYWtlbiBTcXVhZCBhbmQgcmVjb3ZlciB0aGVpciBzZWNyZXRzLg==",
+    "reward": 123,
+    "expiresIn": 2,
+    "encrypted": 1,
+    "probability": "U3VpY2lkZSBtaXNzaW9u"
+  },
+  {
+    "adId": "SlhQQXhUeTA=",
+    "message": "SW5maWx0cmF0ZSBUaGUgRW1lcmFsZCBGb3JzYWtlbiBTcXVhZCBhbmQgcmVjb3ZlciB0aGVpciBzZWNyZXRzLg==",
+    "reward": 123,
+    "expiresIn": 1,
+    "encrypted": 1,
+    "probability": "U3VpY2lkZSBtaXNzaW9u"
+  },
+  {
+    "adId": "ME5vZzYxMFE=",
+    "message": "SW52ZXN0aWdhdGUgS2VyZW0gRXZhbnNvbiBhbmQgZmluZCBvdXQgdGhlaXIgcmVsYXRpb24gdG8gdGhlIG1hZ2ljIGJ1Y2tldC4=",
+    "reward": 151,
+    "expiresIn": 3,
+    "encrypted": 1,
+    "probability": "Umlza3k="
+  }
+]
