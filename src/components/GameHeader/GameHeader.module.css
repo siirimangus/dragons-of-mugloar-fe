@@ -17,15 +17,23 @@
     flex-wrap: wrap;
 }
 
+/* The logo scales with its box, so it keeps its proportions at any width. */
 .title {
+    flex: 0 1 22rem;
+    min-width: 0;
     margin: 0;
 }
 
 .logo {
     display: block;
-    width: auto;
-    height: 2.25rem;
-    max-width: 100%;
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 800px) {
+    .title {
+        flex-basis: 16rem;
+    }
 }
 
 .confirm {
