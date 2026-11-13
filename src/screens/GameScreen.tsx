@@ -44,59 +44,61 @@ export function GameScreen() {
 
   return (
     <div className={styles.screen}>
-      <Hud session={session} disabled={disabled} onEndGame={actions.endGame} />
-      {state.error && (
-        <div className={styles.error}>
-          <ErrorBanner
-            error={state.error}
-            disabled={actions.isPending}
-            onRetry={() => void actions.retry()}
-            onDismiss={actions.dismissError}
-            onPlayAgain={actions.playAgain}
-          />
+      <Hud session={session} disabled={disabled} onEndGame={actions.endGame} focusTitleOnMount />
+      <main className={styles.main}>
+        {state.error && (
+          <div className={styles.error}>
+            <ErrorBanner
+              error={state.error}
+              disabled={actions.isPending}
+              onRetry={() => void actions.retry()}
+              onDismiss={actions.dismissError}
+              onPlayAgain={actions.playAgain}
+            />
+          </div>
+        )}
+        <nav className={styles.tabs} aria-label="Sections">
+          {TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              className={tab === key ? '' : 'secondary'}
+              aria-pressed={tab === key}
+              onClick={() => setTab(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+        <div className={styles.grid}>
+          <div className={styles.advisor} data-active={tab === 'board'}>
+            <Advisor advice={advice} disabled={disabled} onDo={doAdvice} />
+          </div>
+          <div className={styles.board} data-active={tab === 'board'}>
+            <AdBoard
+              ads={state.ads}
+              advisedAdId={advisedAdId}
+              unavailableAdIds={state.unavailableAdIds}
+              status={state.boardStatus}
+              disabled={disabled}
+              onSolve={(adId) => void actions.solveAd(adId)}
+            />
+          </div>
+          <div className={styles.shop} data-active={tab === 'shop'}>
+            <Shop
+              shop={state.shop}
+              gold={session.gold}
+              purchases={state.purchases}
+              advisedItemId={advisedItemId}
+              disabled={disabled}
+              onBuy={(itemId) => void actions.buyItem(itemId)}
+            />
+          </div>
+          <div className={styles.activity} data-active={tab === 'activity'}>
+            <ActivityLog lastResult={state.lastResult} log={state.log} />
+          </div>
         </div>
-      )}
-      <nav className={styles.tabs} aria-label="Sections">
-        {TABS.map(({ key, label }) => (
-          <button
-            key={key}
-            type="button"
-            className={tab === key ? '' : 'secondary'}
-            aria-pressed={tab === key}
-            onClick={() => setTab(key)}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
-      <div className={styles.grid}>
-        <div className={styles.advisor} data-active={tab === 'board'}>
-          <Advisor advice={advice} disabled={disabled} onDo={doAdvice} />
-        </div>
-        <div className={styles.board} data-active={tab === 'board'}>
-          <AdBoard
-            ads={state.ads}
-            advisedAdId={advisedAdId}
-            unavailableAdIds={state.unavailableAdIds}
-            status={state.boardStatus}
-            disabled={disabled}
-            onSolve={(adId) => void actions.solveAd(adId)}
-          />
-        </div>
-        <div className={styles.shop} data-active={tab === 'shop'}>
-          <Shop
-            shop={state.shop}
-            gold={session.gold}
-            purchases={state.purchases}
-            advisedItemId={advisedItemId}
-            disabled={disabled}
-            onBuy={(itemId) => void actions.buyItem(itemId)}
-          />
-        </div>
-        <div className={styles.activity} data-active={tab === 'activity'}>
-          <ActivityLog lastResult={state.lastResult} log={state.log} />
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

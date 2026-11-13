@@ -3,6 +3,11 @@
   gap: var(--space-4);
 }
 
+.main {
+  display: grid;
+  gap: var(--space-4);
+}
+
 .error {
   padding: 0 var(--space-4);
 }

@@ -19,6 +19,7 @@ describe('SummaryScreen', () => {
     await user.click(solveButtons[0]!);
 
     expect(await screen.findByRole('heading', { name: 'Game over' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Game over' })).toHaveFocus();
     expect(screen.getByText('Final score')).toBeInTheDocument();
     expect(screen.getByText(/goal not reached/i)).toBeInTheDocument();
     expect(screen.getByRole('img')).toHaveAttribute('data-slot', 'summary');

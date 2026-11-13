@@ -6,6 +6,14 @@ import { FakeDragonsApi } from '../support/fake-dragons-api';
 import { renderWithGame } from '../support/render';
 
 describe('GameScreen', () => {
+  it('has a main landmark and focuses the heading when play starts', async () => {
+    const { user } = renderWithGame(<App />, new FakeDragonsApi());
+    await user.click(screen.getByRole('button', { name: 'Start new game' }));
+    await screen.findAllByRole('button', { name: 'Solve' });
+    expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveFocus();
+  });
+
   it('mounts a single advisor panel', async () => {
     const { user } = renderWithGame(<App />, new FakeDragonsApi());
     await user.click(screen.getByRole('button', { name: 'Start new game' }));
