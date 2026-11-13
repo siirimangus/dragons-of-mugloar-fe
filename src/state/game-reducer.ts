@@ -179,7 +179,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'adRejected': {
       if (state.unavailableAdIds.includes(action.adId)) return state;
-      const text = 'That message is no longer available.';
+      const text = 'That message could not be solved (it may have expired or already been taken).';
       return {
         ...state,
         ...logged(state, state.session?.turn ?? 0, false, text),

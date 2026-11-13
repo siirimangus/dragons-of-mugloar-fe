@@ -193,7 +193,9 @@ describe('board and errors', () => {
     let state = gameReducer(started(), { type: 'adRejected', adId: 'a1' });
     state = gameReducer(state, { type: 'adRejected', adId: 'a1' });
     expect(state.unavailableAdIds).toEqual(['a1']);
-    expect(state.lastResult).toMatchObject({ success: false });
+    const text = 'That message could not be solved (it may have expired or already been taken).';
+    expect(state.lastResult).toMatchObject({ success: false, text });
+    expect(state.log[0]).toMatchObject({ success: false, text });
   });
 
   it('stores a failure, moves a loading board to error, and can be dismissed', () => {
