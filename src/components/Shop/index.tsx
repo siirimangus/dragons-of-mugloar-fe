@@ -1,8 +1,8 @@
 import { useId } from 'react';
-import { isHealingItem } from '../domain/shop';
-import type { ShopItem as Item } from '../domain/types';
+import { isHealingItem } from '../../domain/shop';
+import type { ShopItem as Item } from '../../domain/types';
 import styles from './Shop.module.css';
-import { ShopItem } from './ShopItem';
+import { ShopItem } from '../ShopItem';
 
 type Props = {
     readonly shop: readonly Item[];

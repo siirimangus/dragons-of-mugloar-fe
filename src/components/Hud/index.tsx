@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Session } from '../domain/types';
-import { GoalBar } from './GoalBar';
+import type { Session } from '../../domain/types';
+import { GoalBar } from '../GoalBar';
 import styles from './Hud.module.css';
 
 type Props = {

@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { ActivityLog, LastResultStatus } from '../components/ActivityLog';
-import { Advisor } from '../components/Advisor';
-import { AdBoard } from '../components/AdBoard';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Hud } from '../components/Hud';
-import { Shop } from '../components/Shop';
-import { advise } from '../domain/advisor';
-import { useGameActions, useGameState } from '../state/game-context';
+import { ActivityLog, LastResultStatus } from '../../components/ActivityLog';
+import { Advisor } from '../../components/Advisor';
+import { AdBoard } from '../../components/AdBoard';
+import { ErrorBanner } from '../../components/ErrorBanner';
+import { Hud } from '../../components/Hud';
+import { Shop } from '../../components/Shop';
+import { advise } from '../../domain/advisor';
+import { useGameActions, useGameState } from '../../state/game-context';
 import styles from './GameScreen.module.css';
 
 type Tab = 'board' | 'shop' | 'activity';

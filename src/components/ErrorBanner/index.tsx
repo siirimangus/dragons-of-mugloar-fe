@@ -1,4 +1,4 @@
-import type { GameError } from '../state/game-reducer';
+import type { GameError } from '../../state/game-reducer';
 import styles from './ErrorBanner.module.css';
 
 type Props = {

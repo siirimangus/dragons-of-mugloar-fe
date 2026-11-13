@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { Illustration } from '../components/Illustration';
-import { GOAL_SCORE } from '../domain/tuning';
-import { useGameActions, useGameState } from '../state/game-context';
+import { Illustration } from '../../components/Illustration';
+import { GOAL_SCORE } from '../../domain/tuning';
+import { useGameActions, useGameState } from '../../state/game-context';
 import styles from './SummaryScreen.module.css';
 
 export function SummaryScreen() {

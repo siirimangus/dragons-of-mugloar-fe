@@ -1,4 +1,4 @@
-import type { SortKey } from '../domain/types';
+import type { SortKey } from '../../domain/types';
 import styles from './AdFilters.module.css';
 
 type Props = {

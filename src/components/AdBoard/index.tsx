@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import type { Ad, SortKey } from '../domain/types';
-import { sortAds, visibleAds } from '../domain/sort';
-import { isTrap } from '../domain/traps';
-import { describeAd } from '../domain/value';
-import type { BoardStatus } from '../state/game-reducer';
-import { AdCard } from './AdCard';
+import type { Ad, SortKey } from '../../domain/types';
+import { sortAds, visibleAds } from '../../domain/sort';
+import { isTrap } from '../../domain/traps';
+import { describeAd } from '../../domain/value';
+import type { BoardStatus } from '../../state/game-reducer';
+import { AdCard } from '../AdCard';
 import styles from './AdBoard.module.css';
-import { AdFilters } from './AdFilters';
-import { Illustration } from './Illustration';
+import { AdFilters } from '../AdFilters';
+import { Illustration } from '../Illustration';
 
 type Props = {
     readonly ads: readonly Ad[];

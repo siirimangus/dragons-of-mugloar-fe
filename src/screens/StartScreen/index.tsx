@@ -1,6 +1,6 @@
-import { ErrorBanner } from '../components/ErrorBanner';
-import { Illustration } from '../components/Illustration';
-import { useGameActions, useGameState } from '../state/game-context';
+import { ErrorBanner } from '../../components/ErrorBanner';
+import { Illustration } from '../../components/Illustration';
+import { useGameActions, useGameState } from '../../state/game-context';
 import styles from './StartScreen.module.css';
 
 export function StartScreen() {

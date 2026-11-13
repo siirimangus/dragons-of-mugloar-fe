@@ -1,5 +1,5 @@
-import { itemEffect } from '../domain/shop';
-import type { ShopItem as Item } from '../domain/types';
+import { itemEffect } from '../../domain/shop';
+import type { ShopItem as Item } from '../../domain/types';
 import styles from './ShopItem.module.css';
 
 type Props = {

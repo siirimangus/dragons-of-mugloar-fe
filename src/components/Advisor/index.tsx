@@ -1,4 +1,4 @@
-import type { Advice } from '../domain/types';
+import type { Advice } from '../../domain/types';
 import styles from './Advisor.module.css';
 
 type Props = {

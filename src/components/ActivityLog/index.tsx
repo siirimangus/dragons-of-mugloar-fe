@@ -1,4 +1,4 @@
-import type { LastResult, LogEntry } from '../state/game-reducer';
+import type { LastResult, LogEntry } from '../../state/game-reducer';
 import styles from './ActivityLog.module.css';
 
 type StatusProps = {

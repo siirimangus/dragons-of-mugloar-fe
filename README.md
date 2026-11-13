@@ -80,17 +80,19 @@ The advisor's rules in detail:
 ```text
 src/
   main.tsx, App.tsx     mount; App shows the start, game or summary screen by game phase
-  screens/              StartScreen, GameScreen, SummaryScreen
-  components/           Hud, GoalBar, AdBoard, AdCard, AdFilters, Shop, ShopItem,
-                        Advisor, ActivityLog, ErrorBanner, Illustration (placeholder slots)
+  screens/              StartScreen/, GameScreen/, SummaryScreen/
+  components/           Hud/, GoalBar/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
+                        Advisor/, ActivityLog/, ErrorBanner/, Illustration/ (placeholder slots)
   state/                game-reducer.ts, game-context.ts, GameProvider.tsx, use-game-actions.ts
   domain/               types, tuning, odds, value, traps, sort, advisor, shop (pure TypeScript)
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
                         decode.ts, decode-ads.ts, retry.ts, errors.ts
   utils/                format.ts: number formatting shared by components and the advisor
-  styles/               tokens.css, global.css  (each component also has a *.module.css)
+  styles/               tokens.css, global.css (shared; each component keeps its own styles)
 test/                   domain, api, state, components, screens, integration, support, fixtures
 ```
+
+Each component and screen is a folder named after it, holding `index.tsx` and its CSS Module, for example `components/Hud/index.tsx` and `components/Hud/Hud.module.css`. Imports stay short (`from '../components/Hud'`) because the folder resolves to its `index.tsx`.
 
 Rules the code follows:
 
