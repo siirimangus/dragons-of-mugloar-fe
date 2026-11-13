@@ -18,6 +18,7 @@ This is the frontend half of an assignment. The backend half, a bot that plays t
 - [Workarounds and non-obvious decisions](#workarounds-and-non-obvious-decisions)
 - [Accessibility](#accessibility)
 - [Known limitations](#known-limitations)
+- [Credits](#credits)
 
 ## Quick start
 
@@ -88,6 +89,7 @@ src/
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
                         decode.ts, decode-ads.ts, retry.ts, errors.ts
   utils/                format.ts: number formatting shared by components and the advisor
+  assets/               dragon-in-barn.webp (start-screen artwork, see Credits)
   styles/               tokens.css, global.css (shared; each component keeps its own styles)
 test/                   domain, api, state, components, screens, integration, support, fixtures
 ```
@@ -184,7 +186,7 @@ Things that were done differently from the obvious route, and why.
 - **Focus management.** Opening a confirmation (end game, solve a trap) moves focus to the safe choice, closing it returns focus to the button that opened it, and Escape cancels. Moving between the game and summary screens focuses the screen heading. These are the only `useEffect`s in the app.
 - **Buy buttons and Solve buttons** keep their short visible text; Solve buttons point at the ad's message with `aria-describedby` so a screen reader can tell them apart, and Buy buttons carry the item name in `aria-label`.
 - **Unavailable cards are not faded.** Fading with `opacity` pushes the text below the 4.5:1 contrast ratio, so unavailable ads use a dashed border and a muted background instead.
-- **Illustrations are placeholders.** `Illustration` renders named slots (start hero, empty board, summary, ad icon) so artwork can be added later without touching any logic.
+- **Only the start screen has artwork so far.** `Illustration` renders named slots (start hero, empty board, summary, ad icon). The hero slot shows the dragon sketch; the other three are still labelled placeholders, so more artwork can be added later without touching any logic. The image is kept in the repo (`src/assets/`) and imported by the component, so it is fingerprinted by Vite and the app does not depend on another site being online.
 
 **Testing**
 
@@ -209,4 +211,8 @@ Things that were done differently from the obvious route, and why.
 - **Keyboard focus** is not restored after Solve, Buy or Retry: the pressed button is disabled while the request runs and the card may disappear, so focus can fall back to the page. Play still works, but it is tedious.
 - **An identical error shown twice** by two different failing actions, without dismissing in between, is not announced the second time.
 - **The reputation endpoint** (`/investigate/reputation`) is not used.
-- **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and real artwork.
+- **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and artwork for the empty board, summary and ad icon.
+
+## Credits
+
+The dragon sketch on the start screen (`src/assets/dragon-in-barn.webp`) is artwork from the Dragons of Mugloar game, taken from `https://dragonsofmugloar.com/assets/dragonInBarnOnPaper.png`. It is not original to this project. The original is a 2100 x 1500 PNG of 5.2 MB; the copy here is resized to 1200 px wide and converted to WebP (about 220 KB, transparency kept) so the start screen loads quickly.
