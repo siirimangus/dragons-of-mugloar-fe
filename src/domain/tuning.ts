@@ -1,16 +1,16 @@
 /** Measured success rate per difficulty label (live API, upgrades enabled). */
 export const LABEL_PROBABILITY: Readonly<Record<string, number>> = {
-  'Piece of cake': 0.94,
-  'Walk in the park': 0.88,
-  'Sure thing': 0.99,
-  'Quite likely': 0.75,
-  'Hmmm....': 0.65,
-  Gamble: 0.55,
-  Risky: 0.46,
-  'Rather detrimental': 0.4,
-  'Playing with fire': 0.26,
-  'Suicide mission': 0.08,
-  Impossible: 0,
+    'Piece of cake': 0.94,
+    'Walk in the park': 0.88,
+    'Sure thing': 0.99,
+    'Quite likely': 0.75,
+    'Hmmm....': 0.65,
+    Gamble: 0.55,
+    Risky: 0.46,
+    'Rather detrimental': 0.4,
+    'Playing with fire': 0.26,
+    'Suicide mission': 0.08,
+    Impossible: 0,
 };
 
 export const UNKNOWN_PROBABILITY = 0.3;
@@ -32,16 +32,16 @@ export const WAIT_RESERVE_GOLD = 300;
 
 /** Cost-effective buying order: 100-gold items first, then the 300-gold ones. */
 export const UPGRADE_ORDER: readonly string[] = [
-  'cs',
-  'gas',
-  'wax',
-  'tricks',
-  'wingpot',
-  'ch',
-  'rf',
-  'iron',
-  'mtrix',
-  'wingpotmax',
+    'cs',
+    'gas',
+    'wax',
+    'tricks',
+    'wingpot',
+    'ch',
+    'rf',
+    'iron',
+    'mtrix',
+    'wingpotmax',
 ];
 
 /** Ads whose message matches are traps: huge reward, top label, but they cost a life. No `g` or `y` flag. */

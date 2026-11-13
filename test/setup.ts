@@ -7,7 +7,7 @@ import { FakeDragonsApi } from './support/fake-dragons-api';
 configure({ asyncUtilTimeout: 5000 });
 
 afterEach(() => {
-  // A failing test must not leave a request held open: pending transitions would block later tests.
-  FakeDragonsApi.releaseAllInstances();
-  cleanup();
+    // A failing test must not leave a request held open: pending transitions would block later tests.
+    FakeDragonsApi.releaseAllInstances();
+    cleanup();
 });

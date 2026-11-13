@@ -6,5 +6,5 @@ import { GameProvider } from '../../src/state/GameProvider';
 
 /** Renders a tree inside a GameProvider backed by the given API. */
 export function renderWithGame(ui: ReactElement, api: DragonsApi) {
-  return { user: userEvent.setup(), ...render(<GameProvider api={api}>{ui}</GameProvider>) };
+    return { user: userEvent.setup(), ...render(<GameProvider api={api}>{ui}</GameProvider>) };
 }

@@ -1,19 +1,19 @@
 .goal {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
 }
 
 .bar {
-  flex: 1;
-  height: 0.75rem;
+    flex: 1;
+    height: 0.75rem;
 }
 
 .text {
-  font-size: var(--font-size-small);
-  color: var(--color-muted);
+    font-size: var(--font-size-small);
+    color: var(--color-muted);
 }
 
 .reached {
-  color: var(--color-success);
+    color: var(--color-success);
 }
