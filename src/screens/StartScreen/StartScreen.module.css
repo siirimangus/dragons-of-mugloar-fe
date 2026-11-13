@@ -8,6 +8,18 @@
     text-align: center;
 }
 
+.title {
+    width: 100%;
+    max-width: 28rem;
+    margin: 0;
+}
+
+.title img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
 .how {
     display: grid;
     gap: var(--space-2);

@@ -11,8 +11,23 @@ describe('StartScreen', () => {
         renderWithGame(<StartScreen />, new FakeDragonsApi());
         expect(screen.getByRole('heading', { name: 'Dragons of Mugloar' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Start new game' })).toBeEnabled();
-        expect(screen.getByRole('img')).toHaveAttribute('data-slot', 'hero');
+        expect(screen.getByRole('img', { name: /dragon looking out/i })).toHaveAttribute(
+            'data-slot',
+            'hero',
+        );
         expect(screen.getByText(/reach 1000 points/i)).toBeInTheDocument();
+    });
+
+    it('shows the logo as the page title, above the dragon sketch', () => {
+        renderWithGame(<StartScreen />, new FakeDragonsApi());
+        const heading = screen.getByRole('heading', { level: 1 });
+        // The logo is the heading's content, so its alt text is the heading's name.
+        const logo = within(heading).getByRole('img', { name: 'Dragons of Mugloar' });
+        expect(logo).toHaveAttribute('src', expect.stringMatching(/logo.*\.png$/));
+        expect(logo).toHaveAttribute('width', '1200');
+        expect(logo).toHaveAttribute('height', '195');
+        const hero = screen.getByRole('img', { name: /dragon looking out/i });
+        expect(logo.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
     it('shows a Retry banner when the game cannot be started, then starts', async () => {

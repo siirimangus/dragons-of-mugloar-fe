@@ -1,3 +1,4 @@
+import logo from '../../assets/logo.png';
 import { ErrorBanner } from '../../components/ErrorBanner';
 import { Illustration } from '../../components/Illustration';
 import { useGameActions, useGameState } from '../../state/game-context';
@@ -9,8 +10,10 @@ export function StartScreen() {
 
     return (
         <main className={styles.start}>
+            <h1 className={styles.title}>
+                <img src={logo} alt="Dragons of Mugloar" width={1200} height={195} />
+            </h1>
             <Illustration slot="hero" />
-            <h1>Dragons of Mugloar</h1>
             <ul className={styles.how}>
                 <li>Read the messages on the board and pick the ones worth solving.</li>
                 <li>Spend gold in the shop on potions and upgrades.</li>

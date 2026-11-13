@@ -89,7 +89,7 @@ src/
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
                         decode.ts, decode-ads.ts, retry.ts, errors.ts
   utils/                format.ts: number formatting shared by components and the advisor
-  assets/               dragon-in-barn.webp (start-screen artwork, see Credits)
+  assets/               logo.png, dragon-in-barn.webp (start-screen artwork, see Credits)
   styles/               tokens.css, global.css (shared; each component keeps its own styles)
 test/                   domain, api, state, components, screens, integration, support, fixtures
 ```
@@ -215,4 +215,7 @@ Things that were done differently from the obvious route, and why.
 
 ## Credits
 
-The dragon sketch on the start screen (`src/assets/dragon-in-barn.webp`) is artwork from the Dragons of Mugloar game, taken from `https://dragonsofmugloar.com/assets/dragonInBarnOnPaper.png`. It is not original to this project. The original is a 2100 x 1500 PNG of 5.2 MB; the copy here is resized to 1200 px wide and converted to WebP (about 220 KB, transparency kept) so the start screen loads quickly.
+Both start-screen images are artwork from the Dragons of Mugloar game. They are not original to this project.
+
+- **Dragon sketch** (`src/assets/dragon-in-barn.webp`), from `https://dragonsofmugloar.com/assets/dragonInBarnOnPaper.png`. The original is a 2100 x 1500 PNG of 5.2 MB; the copy here is resized to 1200 px wide and converted to WebP (about 220 KB, transparency kept) so the start screen loads quickly.
+- **Title logo** (`src/assets/logo.png`), from `https://dragonsofmugloar.com/assets/logo.png`, used unchanged (1200 x 195, 57 KB). It is the page's `h1`, with "Dragons of Mugloar" as its alt text.
