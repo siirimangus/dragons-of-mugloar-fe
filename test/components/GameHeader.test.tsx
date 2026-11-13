@@ -1,15 +1,15 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Hud } from '../../src/components/Hud';
+import { GameHeader } from '../../src/components/GameHeader';
 import { makeSession } from '../support/builders';
 
 const session = makeSession({ score: 1240, gold: 310, lives: 3, level: 4, turn: 23 });
 const stat = (label: string) => within(screen.getByText(label).closest('div')!);
 
-describe('Hud', () => {
+describe('GameHeader', () => {
     it('shows score, gold, lives, level and turn', () => {
-        render(<Hud session={session} disabled={false} onEndGame={() => undefined} />);
+        render(<GameHeader session={session} disabled={false} onEndGame={() => undefined} />);
         expect(stat('Score').getByText('1240')).toBeInTheDocument();
         expect(stat('Gold').getByText('310')).toBeInTheDocument();
         expect(stat('Lives').getByText('3')).toBeInTheDocument();
@@ -20,7 +20,7 @@ describe('Hud', () => {
     it('asks for confirmation before ending the game', async () => {
         const user = userEvent.setup();
         const onEndGame = vi.fn();
-        render(<Hud session={session} disabled={false} onEndGame={onEndGame} />);
+        render(<GameHeader session={session} disabled={false} onEndGame={onEndGame} />);
 
         await user.click(screen.getByRole('button', { name: 'End game' }));
         expect(onEndGame).not.toHaveBeenCalled();
@@ -31,7 +31,7 @@ describe('Hud', () => {
     it('lets the player change their mind', async () => {
         const user = userEvent.setup();
         const onEndGame = vi.fn();
-        render(<Hud session={session} disabled={false} onEndGame={onEndGame} />);
+        render(<GameHeader session={session} disabled={false} onEndGame={onEndGame} />);
 
         await user.click(screen.getByRole('button', { name: 'End game' }));
         await user.click(screen.getByRole('button', { name: 'Keep playing' }));
@@ -40,13 +40,13 @@ describe('Hud', () => {
     });
 
     it('disables ending the game while an action is running', () => {
-        render(<Hud session={session} disabled onEndGame={() => undefined} />);
+        render(<GameHeader session={session} disabled onEndGame={() => undefined} />);
         expect(screen.getByRole('button', { name: 'End game' })).toBeDisabled();
     });
 
     it('moves focus to the safe choice when the confirmation opens', async () => {
         const user = userEvent.setup();
-        render(<Hud session={session} disabled={false} onEndGame={() => undefined} />);
+        render(<GameHeader session={session} disabled={false} onEndGame={() => undefined} />);
 
         await user.click(screen.getByRole('button', { name: 'End game' }));
         expect(screen.getByRole('button', { name: 'Keep playing' })).toHaveFocus();
@@ -54,7 +54,7 @@ describe('Hud', () => {
 
     it('returns focus to End game when the confirmation is cancelled', async () => {
         const user = userEvent.setup();
-        render(<Hud session={session} disabled={false} onEndGame={() => undefined} />);
+        render(<GameHeader session={session} disabled={false} onEndGame={() => undefined} />);
 
         await user.click(screen.getByRole('button', { name: 'End game' }));
         await user.click(screen.getByRole('button', { name: 'Keep playing' }));
@@ -64,7 +64,7 @@ describe('Hud', () => {
     it('cancels the confirmation with Escape and restores focus', async () => {
         const user = userEvent.setup();
         const onEndGame = vi.fn();
-        render(<Hud session={session} disabled={false} onEndGame={onEndGame} />);
+        render(<GameHeader session={session} disabled={false} onEndGame={onEndGame} />);
 
         await user.click(screen.getByRole('button', { name: 'End game' }));
         await user.keyboard('{Escape}');

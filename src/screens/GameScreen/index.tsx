@@ -3,7 +3,7 @@ import { ActivityLog, LastResultStatus } from '../../components/ActivityLog';
 import { Advisor } from '../../components/Advisor';
 import { AdBoard } from '../../components/AdBoard';
 import { ErrorBanner } from '../../components/ErrorBanner';
-import { Hud } from '../../components/Hud';
+import { GameHeader } from '../../components/GameHeader';
 import { Shop } from '../../components/Shop';
 import { advise } from '../../domain/advisor';
 import { useGameActions, useGameState } from '../../state/game-context';
@@ -44,7 +44,7 @@ export function GameScreen() {
 
     return (
         <div className={styles.screen}>
-            <Hud
+            <GameHeader
                 session={session}
                 disabled={disabled}
                 onEndGame={actions.endGame}

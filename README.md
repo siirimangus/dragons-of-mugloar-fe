@@ -81,7 +81,7 @@ The advisor's rules in detail:
 src/
   main.tsx, App.tsx     mount; App shows the start, game or summary screen by game phase
   screens/              StartScreen/, GameScreen/, SummaryScreen/
-  components/           Hud/, GoalBar/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
+  components/           GameHeader/, GoalBar/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
                         Advisor/, ActivityLog/, ErrorBanner/, Illustration/ (placeholder slots)
   state/                game-reducer.ts, game-context.ts, GameProvider.tsx, use-game-actions.ts
   domain/               types, tuning, odds, value, traps, sort, advisor, shop (pure TypeScript)
@@ -92,7 +92,7 @@ src/
 test/                   domain, api, state, components, screens, integration, support, fixtures
 ```
 
-Each component and screen is a folder named after it, holding `index.tsx` and its CSS Module, for example `components/Hud/index.tsx` and `components/Hud/Hud.module.css`. Imports stay short (`from '../components/Hud'`) because the folder resolves to its `index.tsx`.
+Each component and screen is a folder named after it, holding `index.tsx` and its CSS Module, for example `components/GameHeader/index.tsx` and `components/GameHeader/GameHeader.module.css`. Imports stay short (`from '../components/GameHeader'`) because the folder resolves to its `index.tsx`.
 
 Rules the code follows:
 

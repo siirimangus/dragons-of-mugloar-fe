@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Session } from '../../domain/types';
 import { GoalBar } from '../GoalBar';
-import styles from './Hud.module.css';
+import styles from './GameHeader.module.css';
 
 type Props = {
     readonly session: Session;
     readonly disabled: boolean;
     readonly onEndGame: () => void;
-    /** Moves keyboard focus to the title once, when the HUD first appears. */
+    /** Moves keyboard focus to the title once, when the header first appears. */
     readonly focusTitleOnMount?: boolean;
 };
 
@@ -20,7 +20,7 @@ function Stat({ label, value }: { readonly label: string; readonly value: number
     );
 }
 
-export function Hud({ session, disabled, onEndGame, focusTitleOnMount = false }: Props) {
+export function GameHeader({ session, disabled, onEndGame, focusTitleOnMount = false }: Props) {
     const [confirming, setConfirming] = useState(false);
     const endGameRef = useRef<HTMLButtonElement>(null);
     const keepPlayingRef = useRef<HTMLButtonElement>(null);
@@ -41,7 +41,7 @@ export function Hud({ session, disabled, onEndGame, focusTitleOnMount = false }:
     }, [confirming]);
 
     return (
-        <header className={styles.hud}>
+        <header className={styles.header}>
             <div className={styles.top}>
                 <h1 ref={titleRef} tabIndex={-1} className={styles.title}>
                     Dragons of Mugloar
