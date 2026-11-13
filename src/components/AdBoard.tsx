@@ -22,6 +22,8 @@ export function AdBoard({ ads, advisedAdId, unavailableAdIds, status, disabled, 
   const [sortKey, setSortKey] = useState<SortKey>('value');
   const [hideTraps, setHideTraps] = useState(true);
 
+  // Keys come from the position in the original list so sorting/filtering never remounts a card.
+  const keys = new Map(ads.map((ad, index) => [ad, `${ad.adId}:${index}`]));
   const shown = sortAds(visibleAds(ads, hideTraps), sortKey);
   const hiddenTrapCount = hideTraps ? ads.filter(isTrap).length : 0;
   const loading = status === 'loading';
@@ -44,9 +46,9 @@ export function AdBoard({ ads, advisedAdId, unavailableAdIds, status, disabled, 
         </div>
       ) : shown.length > 0 ? (
         <ul className={styles.list}>
-          {shown.map((ad, index) => (
+          {shown.map((ad) => (
             <AdCard
-              key={`${ad.adId}:${index}`}
+              key={keys.get(ad)}
               ad={ad}
               insight={describeAd(ad)}
               recommended={ad.adId === advisedAdId}

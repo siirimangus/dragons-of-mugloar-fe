@@ -79,6 +79,15 @@ describe('AdBoard', () => {
     expect(cardMessages()).toEqual(expected);
   });
 
+  it('keeps the same card element when the sort order changes', async () => {
+    const user = userEvent.setup();
+    renderBoard();
+    const card = screen.getByText('Cake job').closest('li');
+    await user.selectOptions(screen.getByLabelText(/sort by/i), 'reward');
+    expect(card).toBeInTheDocument();
+    expect(screen.getByText('Cake job').closest('li')).toBe(card);
+  });
+
   it('marks only the advised ad as recommended', () => {
     renderBoard({ advisedAdId: 'sure' });
     expect(screen.getAllByText('Recommended')).toHaveLength(1);
