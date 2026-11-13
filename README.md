@@ -83,7 +83,7 @@ src/
   main.tsx, App.tsx     mount; App shows the start, game or summary screen by game phase
   screens/              StartScreen/, GameScreen/, SummaryScreen/
   components/           GameHeader/, GoalBar/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
-                        Advisor/, ActivityLog/, ErrorBanner/, Logo/, Illustration/ (artwork slots)
+                        Advisor/, ActivityLog/, ErrorBanner/, Logo/, Illustration/ (artwork)
   state/                game-reducer.ts, game-context.ts, GameProvider.tsx, use-game-actions.ts
   domain/               types, tuning, odds, value, traps, sort, advisor, shop (pure TypeScript)
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
@@ -187,7 +187,7 @@ Things that were done differently from the obvious route, and why.
 - **Focus management.** Opening a confirmation (end game, solve a trap) moves focus to the safe choice, closing it returns focus to the button that opened it, and Escape cancels. Moving between the game and summary screens focuses the screen heading. These are the only `useEffect`s in the app.
 - **Buy buttons and Solve buttons** keep their short visible text; Solve buttons point at the ad's message with `aria-describedby` so a screen reader can tell them apart, and Buy buttons carry the item name in `aria-label`.
 - **Unavailable cards are not faded.** Fading with `opacity` pushes the text below the 4.5:1 contrast ratio, so unavailable ads use a dashed border and a muted background instead.
-- **Artwork exists for three slots so far.** `Illustration` renders named slots (start hero, empty board, summary, ad icon). The start screen shows the "Missing Zelda" poster under the logo, an empty message board shows the "Royal Request of Escort" parchment, and the summary screen shows the dragon-in-the-barn sketch. Only the ad-icon slot is still a labelled placeholder, so more artwork can be added later by adding one entry to a table, without touching any logic. The images are kept in the repo (`src/assets/`) and imported by the component, so Vite fingerprints them and the app does not depend on another site being online.
+- **Artwork goes in named slots.** `Illustration` renders a picture for a slot (start hero, empty board, summary) from one table, so screens say where artwork goes and not which file it is. The start screen shows the "Missing Zelda" poster under the logo, an empty message board shows the "Royal Request of Escort" parchment, and the summary screen shows the dragon-in-the-barn sketch. Adding a slot means adding one entry to the table (the compiler requires it). The images are kept in the repo (`src/assets/`) and imported by the component, so Vite fingerprints them and the app does not depend on another site being online.
 
 **Testing**
 
@@ -212,7 +212,7 @@ Things that were done differently from the obvious route, and why.
 - **Keyboard focus** is not restored after Solve, Buy or Retry: the pressed button is disabled while the request runs and the card may disappear, so focus can fall back to the page. Play still works, but it is tedious.
 - **An identical error shown twice** by two different failing actions, without dismissing in between, is not announced the second time.
 - **The reputation endpoint** (`/investigate/reputation`) is not used.
-- **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and artwork for the ad icon.
+- **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and further artwork.
 
 ## Credits
 

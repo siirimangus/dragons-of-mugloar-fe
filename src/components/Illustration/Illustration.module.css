@@ -1,13 +1,3 @@
-.slot {
-    display: grid;
-    place-items: center;
-    border: 2px dashed var(--color-border);
-    border-radius: var(--radius);
-    color: var(--color-muted);
-    background: var(--color-surface);
-    font-size: var(--font-size-small);
-}
-
 .artwork {
     display: block;
     width: 100%;
@@ -24,9 +14,4 @@
 
 .artwork-summary {
     max-width: 22rem;
-}
-
-.ad {
-    width: 3rem;
-    height: 3rem;
 }
