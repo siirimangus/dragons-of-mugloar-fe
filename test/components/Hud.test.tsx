@@ -43,4 +43,32 @@ describe('Hud', () => {
     render(<Hud session={session} disabled onEndGame={() => undefined} />);
     expect(screen.getByRole('button', { name: 'End game' })).toBeDisabled();
   });
+
+  it('moves focus to the safe choice when the confirmation opens', async () => {
+    const user = userEvent.setup();
+    render(<Hud session={session} disabled={false} onEndGame={() => undefined} />);
+
+    await user.click(screen.getByRole('button', { name: 'End game' }));
+    expect(screen.getByRole('button', { name: 'Keep playing' })).toHaveFocus();
+  });
+
+  it('returns focus to End game when the confirmation is cancelled', async () => {
+    const user = userEvent.setup();
+    render(<Hud session={session} disabled={false} onEndGame={() => undefined} />);
+
+    await user.click(screen.getByRole('button', { name: 'End game' }));
+    await user.click(screen.getByRole('button', { name: 'Keep playing' }));
+    expect(screen.getByRole('button', { name: 'End game' })).toHaveFocus();
+  });
+
+  it('cancels the confirmation with Escape and restores focus', async () => {
+    const user = userEvent.setup();
+    const onEndGame = vi.fn();
+    render(<Hud session={session} disabled={false} onEndGame={onEndGame} />);
+
+    await user.click(screen.getByRole('button', { name: 'End game' }));
+    await user.keyboard('{Escape}');
+    expect(onEndGame).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'End game' })).toHaveFocus();
+  });
 });

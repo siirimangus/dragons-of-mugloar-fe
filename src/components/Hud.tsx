@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Session } from '../domain/types';
 import { GoalBar } from './GoalBar';
 import styles from './Hud.module.css';
@@ -20,23 +20,48 @@ function Stat({ label, value }: { readonly label: string; readonly value: number
 
 export function Hud({ session, disabled, onEndGame }: Props) {
   const [confirming, setConfirming] = useState(false);
+  const endGameRef = useRef<HTMLButtonElement>(null);
+  const keepPlayingRef = useRef<HTMLButtonElement>(null);
+  const wasConfirming = useRef(false);
+
+  useEffect(() => {
+    if (confirming) {
+      keepPlayingRef.current?.focus();
+    } else if (wasConfirming.current) {
+      endGameRef.current?.focus();
+    }
+    wasConfirming.current = confirming;
+  }, [confirming]);
 
   return (
     <header className={styles.hud}>
       <div className={styles.top}>
         <h1 className={styles.title}>Dragons of Mugloar</h1>
         {confirming ? (
-          <div role="group" aria-label="Confirm ending the game" className={styles.confirm}>
+          <div
+            role="group"
+            aria-label="Confirm ending the game"
+            className={styles.confirm}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') setConfirming(false);
+            }}
+          >
             <span>End this game?</span>
             <button type="button" onClick={onEndGame} disabled={disabled}>
               Yes, end game
             </button>
-            <button type="button" className="secondary" onClick={() => setConfirming(false)}>
+            <button
+              ref={keepPlayingRef}
+              type="button"
+              className="secondary"
+              onClick={() => setConfirming(false)}
+            >
               Keep playing
             </button>
           </div>
         ) : (
           <button
+            ref={endGameRef}
             type="button"
             className="secondary"
             onClick={() => setConfirming(true)}
