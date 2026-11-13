@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatPercent, formatValue, pluralize } from '../../src/components/format';
+import { formatPercent, formatValue, pluralize } from '../../src/utils/format';
 
 describe('formatPercent', () => {
     it.each([

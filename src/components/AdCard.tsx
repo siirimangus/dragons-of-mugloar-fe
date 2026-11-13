@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { Ad, AdInsight, Risk } from '../domain/types';
+import { formatPercent, formatValue, pluralize } from '../utils/format';
 import styles from './AdCard.module.css';
-import { formatPercent, formatValue, pluralize } from './format';
 
 type Props = {
     readonly ad: Ad;

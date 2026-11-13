@@ -87,13 +87,14 @@ src/
   domain/               types, tuning, odds, value, traps, sort, advisor, shop (pure TypeScript)
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
                         decode.ts, decode-ads.ts, retry.ts, errors.ts
+  utils/                format.ts: number formatting shared by components and the advisor
   styles/               tokens.css, global.css  (each component also has a *.module.css)
 test/                   domain, api, state, components, screens, integration, support, fixtures
 ```
 
 Rules the code follows:
 
-- **Dependencies point one way:** screens, then components, then state, then domain and api. `domain/` imports nothing outside itself, and ESLint enforces that it uses no React, `fetch`, `window` or other layers.
+- **Dependencies point one way:** screens, then components, then state, then domain and api. `domain/` is the bottom layer: it may use `utils/` (small pure helpers), and ESLint forbids it from using React, `fetch`, `window`, or importing from `api/`, `state/`, `components/` or `screens/`.
 - **`domain/` is pure TypeScript.** Odds, value, risk, trap detection, sorting and the advisor are plain functions that are tested without rendering anything.
 - **`api/` is the only place that knows about the wire format.** It validates every response with zod, decodes encrypted ads, retries failures, and hands the app clean typed objects. No other code knows that encryption exists.
 - **The API is injected.** `GameProvider` receives a `DragonsApi` implementation as a prop: the HTTP client in `main.tsx`, an in-memory fake in tests.

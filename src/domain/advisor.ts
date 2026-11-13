@@ -1,3 +1,4 @@
+import { formatPercent } from '../utils/format';
 import {
     HEAL_ITEM_ID,
     HEAL_THRESHOLD,
@@ -20,8 +21,6 @@ export type AdviceInput = {
 
 const shorten = (text: string, max = 60): string =>
     text.length > max ? `${text.slice(0, max - 3)}...` : text;
-
-const percent = (p: number): string => `${Math.round(p * 100)}%`;
 
 function wait(heal: ShopItem, reason: string): Advice {
     return { kind: 'buy', targetId: heal.id, headline: 'Wait for a fresh board', reason };
@@ -64,7 +63,7 @@ export function advise(input: AdviceInput): Advice {
             kind: 'solve',
             targetId: best.ad.adId,
             headline: `Solve "${shorten(best.ad.message)}"`,
-            reason: `About ${percent(best.insight.probability)} chance to win ${best.ad.reward} gold.`,
+            reason: `About ${formatPercent(best.insight.probability)} chance to win ${best.ad.reward} gold.`,
         };
     }
 
@@ -88,7 +87,7 @@ export function advise(input: AdviceInput): Advice {
             kind: 'solve',
             targetId: best.ad.adId,
             headline: `Solve "${shorten(best.ad.message)}"`,
-            reason: `No good options and no spare gold to wait: this is the least bad message, with about ${percent(best.insight.probability)} chance. You may lose a life.`,
+            reason: `No good options and no spare gold to wait: this is the least bad message, with about ${formatPercent(best.insight.probability)} chance. You may lose a life.`,
         };
     }
 
