@@ -72,7 +72,7 @@ export function advise(input: AdviceInput): Advice {
     if (!best) {
       return wait(
         heal,
-        'Only trap ads are on the board. A potion costs a turn but brings a fresh board and a spare life.',
+        'No safe messages are on the board. A potion costs a turn but brings a fresh board and a spare life.',
       );
     }
     if (session.gold - heal.cost >= WAIT_RESERVE_GOLD) {
@@ -96,6 +96,6 @@ export function advise(input: AdviceInput): Advice {
     kind: 'none',
     targetId: null,
     headline: 'No safe move',
-    reason: 'Only trap ads are left and a potion is out of reach. You can end the game.',
+    reason: 'No safe messages are left and a potion is out of reach. You can end the game.',
   };
 }

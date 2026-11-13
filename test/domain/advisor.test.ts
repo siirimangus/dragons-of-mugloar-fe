@@ -80,12 +80,31 @@ describe('advise', () => {
       kind: 'buy',
       targetId: 'hpot',
       headline: 'Wait for a fresh board',
+      reason:
+        'No safe messages are on the board. A potion costs a turn but brings a fresh board and a spare life.',
     });
   });
 
   it('says there is no safe move with only traps and no gold', () => {
     const advice = advise({ ...base, session: makeSession({ gold: 49 }), ads: [trap] });
-    expect(advice).toMatchObject({ kind: 'none', targetId: null, headline: 'No safe move' });
+    expect(advice).toMatchObject({
+      kind: 'none',
+      targetId: null,
+      headline: 'No safe move',
+      reason: 'No safe messages are left and a potion is out of reach. You can end the game.',
+    });
+  });
+
+  it('uses the same no-safe-messages wording for an empty board', () => {
+    expect(advise({ ...base, session: makeSession({ gold: 50 }), ads: [] })).toMatchObject({
+      kind: 'buy',
+      reason:
+        'No safe messages are on the board. A potion costs a turn but brings a fresh board and a spare life.',
+    });
+    expect(advise({ ...base, session: makeSession({ gold: 49 }), ads: [] })).toMatchObject({
+      kind: 'none',
+      reason: 'No safe messages are left and a potion is out of reach. You can end the game.',
+    });
   });
 
   it('waits instead of gambling on a bad ad only when gold stays at least 300 afterwards', () => {
