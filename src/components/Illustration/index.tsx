@@ -1,3 +1,4 @@
+import ambassadorOnPaper from '../../assets/ambassador-on-paper.webp';
 import dragonInBarn from '../../assets/dragon-in-barn.webp';
 import zeldaOnPaper from '../../assets/zelda-on-paper.webp';
 import styles from './Illustration.module.css';
@@ -20,6 +21,13 @@ const ARTWORK: Partial<Record<IllustrationSlot, Artwork>> = {
         width: 1200,
         height: 1092,
     },
+    'empty-board': {
+        src: ambassadorOnPaper,
+        // The picture contains text, so the description carries it.
+        alt: 'Parchment titled "Royal Request of Escort": the Shacoman ambassador Mr Tao is to arrive safely in the capital, cape included, beside a pen sketch of a hooded figure',
+        width: 800,
+        height: 571,
+    },
     summary: {
         src: dragonInBarn,
         alt: 'Pen sketch on parchment of a dragon looking out of a small barn, with a burning tree and a fire nearby',
@@ -28,8 +36,7 @@ const ARTWORK: Partial<Record<IllustrationSlot, Artwork>> = {
     },
 };
 
-const PLACEHOLDER_LABELS: Record<'empty-board' | 'ad', string> = {
-    'empty-board': 'Empty message board',
+const PLACEHOLDER_LABELS: Record<'ad', string> = {
     ad: 'Message',
 };
 

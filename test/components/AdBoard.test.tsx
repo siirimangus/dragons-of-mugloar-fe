@@ -113,7 +113,10 @@ describe('AdBoard', () => {
     it('explains an empty board', () => {
         renderBoard({ ads: [] });
         expect(screen.getByText(/no messages right now/i)).toBeInTheDocument();
-        expect(screen.getByRole('img')).toHaveAttribute('data-slot', 'empty-board');
+        expect(screen.getByRole('img', { name: /royal request of escort/i })).toHaveAttribute(
+            'data-slot',
+            'empty-board',
+        );
     });
 
     it('says so when the board is loading', () => {

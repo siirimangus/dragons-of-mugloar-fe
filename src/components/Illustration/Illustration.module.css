@@ -18,14 +18,12 @@
     max-width: 26rem;
 }
 
-.artwork-summary {
-    max-width: 22rem;
+.artwork-empty-board {
+    max-width: 20rem;
 }
 
-.empty-board {
-    width: 100%;
-    max-width: 16rem;
-    aspect-ratio: 3 / 2;
+.artwork-summary {
+    max-width: 22rem;
 }
 
 .ad {
