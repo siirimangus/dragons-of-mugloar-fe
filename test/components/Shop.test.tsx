@@ -72,4 +72,37 @@ describe('Shop', () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText('Suggested')).toHaveLength(1);
   });
+
+  it('treats gold exactly equal to the cost as affordable', () => {
+    renderShop({ gold: 100 });
+    expect(screen.getByRole('button', { name: 'Buy Claw Sharpening' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Buy Claw Honing' })).toBeDisabled();
+  });
+
+  it('disables an item when gold is one short of the cost', () => {
+    renderShop({ gold: 99 });
+    expect(screen.getByRole('button', { name: 'Buy Claw Sharpening' })).toBeDisabled();
+  });
+
+  it('places each item in its own group', () => {
+    renderShop();
+    const healing = screen.getByRole('group', { name: 'Healing' });
+    expect(within(healing).getByText('Healing potion')).toBeInTheDocument();
+    expect(within(healing).queryByText('Gasoline')).not.toBeInTheDocument();
+    const upgrades = screen.getByRole('group', { name: 'Upgrades' });
+    expect(within(upgrades).getByText('Gasoline')).toBeInTheDocument();
+    expect(within(upgrades).queryByText('Healing potion')).not.toBeInTheDocument();
+  });
+
+  it('renders no headings for an empty shop', () => {
+    renderShop({ shop: [] });
+    expect(screen.queryByRole('heading', { name: 'Healing' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Upgrades' })).not.toBeInTheDocument();
+  });
+
+  it('omits the healing group when there are only upgrades', () => {
+    renderShop({ shop: SHOP.filter((item) => item.id !== 'hpot') });
+    expect(screen.queryByRole('heading', { name: 'Healing' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Upgrades' })).toBeInTheDocument();
+  });
 });
