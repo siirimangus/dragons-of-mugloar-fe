@@ -44,11 +44,10 @@ describe('StartScreen', () => {
     await clickWhenEnabled(user, () => screen.getByRole('button', { name: 'Start new game' }));
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Starting...' })).toBeDisabled();
-      // The banner is cleared when an action starts; if it is still shown, it must be disabled too.
-      const banner = screen.queryByRole('alert');
-      if (banner) {
-        for (const button of within(banner).getAllByRole('button')) expect(button).toBeDisabled();
-      }
+      // Starting a game does not clear the error, so the banner stays and must be locked too.
+      const banner = screen.getByRole('alert');
+      expect(within(banner).getByRole('button', { name: 'Retry' })).toBeDisabled();
+      expect(within(banner).getByRole('button', { name: 'Dismiss' })).toBeDisabled();
     });
     release();
   });

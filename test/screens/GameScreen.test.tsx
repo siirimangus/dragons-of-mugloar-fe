@@ -22,7 +22,7 @@ describe('GameScreen', () => {
     expect(document.querySelectorAll('#advisor-title')).toHaveLength(1);
   });
 
-  it('disables the board, shop and End game while an action is in flight', async () => {
+  it('disables the board, shop, End game and the error banner while an action is in flight', async () => {
     const api = new FakeDragonsApi();
     const { user } = renderWithGame(<App />, api);
     await user.click(screen.getByRole('button', { name: 'Start new game' }));
@@ -30,6 +30,7 @@ describe('GameScreen', () => {
     await screen.findAllByRole('button', { name: 'Solve' });
     api.failNext('solve', new ApiError('net', { retryable: true }));
     await clickWhenEnabled(user, firstSolve);
+    await screen.findByRole('alert');
 
     const release = api.hold('solve');
     await clickWhenEnabled(user, firstSolve);
@@ -38,11 +39,10 @@ describe('GameScreen', () => {
       for (const button of screen.getAllByRole('button', { name: /^Solve|^Buy/ })) {
         expect(button).toBeDisabled();
       }
-      // The banner is cleared when an action starts; if it is still shown, it must be disabled too.
-      const banner = screen.queryByRole('alert');
-      if (banner) {
-        for (const button of within(banner).getAllByRole('button')) expect(button).toBeDisabled();
-      }
+      // Solving does not clear the error, so the banner stays and must be locked too.
+      const banner = screen.getByRole('alert');
+      expect(within(banner).getByRole('button', { name: 'Retry' })).toBeDisabled();
+      expect(within(banner).getByRole('button', { name: 'Dismiss' })).toBeDisabled();
     });
     release();
   });

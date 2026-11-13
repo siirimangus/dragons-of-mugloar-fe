@@ -11,6 +11,8 @@ export type FakeOptions = {
   readonly solveSucceeds?: (turn: number) => boolean;
 };
 
+const instances = new Set<FakeDragonsApi>();
+
 type Method = 'startGame' | 'getMessages' | 'solve' | 'getShop' | 'buy';
 
 /** A tiny deterministic game: three ads per turn (one good, one bad, one trap). */
@@ -21,8 +23,10 @@ export class FakeDragonsApi implements DragonsApi {
   private readonly solveSucceeds: (turn: number) => boolean;
   private readonly failures = new Map<Method, Error[]>();
   private readonly holds = new Map<Method, Promise<void>>();
+  private readonly releases = new Set<() => void>();
 
   constructor(options: FakeOptions = {}) {
+    instances.add(this);
     this.solveSucceeds = options.solveSucceeds ?? (() => true);
     this.state = {
       gameId: 'fake-game',
@@ -47,7 +51,20 @@ export class FakeDragonsApi implements DragonsApi {
   hold(method: Method): () => void {
     let release!: () => void;
     this.holds.set(method, new Promise<void>((resolve) => (release = resolve)));
+    this.releases.add(release);
     return release;
+  }
+
+  /** Releases every hold that is still open (releasing twice is harmless). */
+  releaseAll(): void {
+    for (const release of this.releases) release();
+    this.releases.clear();
+  }
+
+  /** Releases the holds of every fake created so far; used by the global test teardown. */
+  static releaseAllInstances(): void {
+    for (const api of instances) api.releaseAll();
+    instances.clear();
   }
 
   snapshot(): Session {

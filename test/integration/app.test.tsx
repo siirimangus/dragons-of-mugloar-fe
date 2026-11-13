@@ -1,14 +1,11 @@
-import { configure, screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/App';
 import { ApiError } from '../../src/api/errors';
 import type { Ad } from '../../src/domain/types';
 import { FakeDragonsApi, type FakeOptions } from '../support/fake-dragons-api';
+import { clickWhenEnabled } from '../support/click';
 import { renderWithGame } from '../support/render';
-
-// Under heavy CPU load the default 1s async timeout is too tight for multi-step flows.
-configure({ asyncUtilTimeout: 5000 });
-vi.setConfig({ testTimeout: 15000 });
 
 async function startGame(options: FakeOptions = {}, api = new FakeDragonsApi(options)) {
   const view = renderWithGame(<App />, api);
@@ -18,15 +15,6 @@ async function startGame(options: FakeOptions = {}, api = new FakeDragonsApi(opt
   await waitFor(() => expect(screen.getByRole('button', { name: 'End game' })).toBeEnabled());
   await screen.findByRole('button', { name: 'Buy Healing potion' });
   return { ...view, api };
-}
-
-/** Clicks a button once the app has settled enough to enable it (a click on a disabled button is a no-op). */
-async function clickWhenEnabled(
-  user: ReturnType<typeof renderWithGame>['user'],
-  find: () => HTMLElement,
-) {
-  await waitFor(() => expect(find()).toBeEnabled());
-  await user.click(find());
 }
 
 const stat = (label: string) => within(screen.getByText(label).closest('div')!);
@@ -154,8 +142,19 @@ describe('when things go wrong', () => {
       within(screen.getByText('Recommended').closest('li')!).getByRole('button', { name: 'Solve' }),
     );
 
-    expect(await screen.findAllByText(/no longer available/i)).not.toHaveLength(0);
+    const card = (text: string) => screen.getByText(text).closest('li')!;
+    expect(
+      await within(card('Help Ann to fix their wagon')).findByText('No longer available'),
+    ).toBeInTheDocument();
+    expect(
+      within(card('Escort Bob to the market')).queryByText('No longer available'),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    await clickWhenEnabled(user, () =>
+      within(card('Escort Bob to the market')).getByRole('button', { name: 'Solve' }),
+    );
+    await screen.findByText('You successfully solved the mission!');
   });
 });
 
@@ -202,7 +201,7 @@ describe('while a request is in flight', () => {
     ];
     await waitFor(() => {
       for (const button of locked()) expect(button).toBeDisabled();
-      // Starting an action clears the error, so the banner buttons cannot be clicked mid-flight.
+      // Retrying clears the error as it starts, so the banner is gone while the retry is in flight.
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
 
@@ -240,7 +239,7 @@ describe('when the server repeats an ad id', () => {
         }),
       );
       await screen.findByText('You successfully solved the mission!');
-      expect(errors).not.toHaveBeenCalled();
+      expect(errors.mock.calls).toEqual([]);
     } finally {
       errors.mockRestore();
     }
