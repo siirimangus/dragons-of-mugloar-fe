@@ -1,0 +1,32 @@
+.slot {
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-muted);
+  background: var(--color-surface);
+  font-size: var(--font-size-small);
+}
+
+.hero {
+  width: 100%;
+  max-width: 24rem;
+  aspect-ratio: 4 / 3;
+}
+
+.empty-board {
+  width: 100%;
+  max-width: 16rem;
+  aspect-ratio: 3 / 2;
+}
+
+.summary {
+  width: 100%;
+  max-width: 20rem;
+  aspect-ratio: 4 / 3;
+}
+
+.ad {
+  width: 3rem;
+  height: 3rem;
+}
