@@ -25,7 +25,10 @@ describe('SummaryScreen', () => {
         );
         expect(screen.getByText('Final score')).toBeInTheDocument();
         expect(screen.getByText(/goal not reached/i)).toBeInTheDocument();
-        expect(screen.getByRole('img')).toHaveAttribute('data-slot', 'summary');
+        expect(screen.getByRole('img', { name: /dragon looking out/i })).toHaveAttribute(
+            'data-slot',
+            'summary',
+        );
 
         await clickWhenEnabled(user, () => screen.getByRole('button', { name: 'Play again' }));
         expect(await screen.findByRole('button', { name: 'Start new game' })).toBeInTheDocument();

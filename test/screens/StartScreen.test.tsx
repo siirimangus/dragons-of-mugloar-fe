@@ -11,14 +11,14 @@ describe('StartScreen', () => {
         renderWithGame(<StartScreen />, new FakeDragonsApi());
         expect(screen.getByRole('heading', { name: 'Dragons of Mugloar' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Start new game' })).toBeEnabled();
-        expect(screen.getByRole('img', { name: /dragon looking out/i })).toHaveAttribute(
+        expect(screen.getByRole('img', { name: /missing.*zelda/i })).toHaveAttribute(
             'data-slot',
             'hero',
         );
         expect(screen.getByText(/reach 1000 points/i)).toBeInTheDocument();
     });
 
-    it('shows the logo as the page title, above the dragon sketch', () => {
+    it('shows the logo as the page title, above the hero picture', () => {
         renderWithGame(<StartScreen />, new FakeDragonsApi());
         const heading = screen.getByRole('heading', { level: 1 });
         // The logo is the heading's content, so its alt text is the heading's name.
@@ -26,7 +26,7 @@ describe('StartScreen', () => {
         expect(logo).toHaveAttribute('src', expect.stringMatching(/logo.*\.png$/));
         expect(logo).toHaveAttribute('width', '1200');
         expect(logo).toHaveAttribute('height', '195');
-        const hero = screen.getByRole('img', { name: /dragon looking out/i });
+        const hero = screen.getByRole('img', { name: /missing.*zelda/i });
         expect(logo.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 

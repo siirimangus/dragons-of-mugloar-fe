@@ -89,7 +89,7 @@ src/
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
                         decode.ts, decode-ads.ts, retry.ts, errors.ts
   utils/                format.ts: number formatting shared by components and the advisor
-  assets/               logo.png, dragon-in-barn.webp (start-screen artwork, see Credits)
+  assets/               logo.png, zelda-on-paper.webp, dragon-in-barn.webp (artwork, see Credits)
   styles/               tokens.css, global.css (shared; each component keeps its own styles)
 public/                 favicon.png (served as is at the site root)
 test/                   domain, api, state, components, screens, integration, support, fixtures
@@ -187,7 +187,7 @@ Things that were done differently from the obvious route, and why.
 - **Focus management.** Opening a confirmation (end game, solve a trap) moves focus to the safe choice, closing it returns focus to the button that opened it, and Escape cancels. Moving between the game and summary screens focuses the screen heading. These are the only `useEffect`s in the app.
 - **Buy buttons and Solve buttons** keep their short visible text; Solve buttons point at the ad's message with `aria-describedby` so a screen reader can tell them apart, and Buy buttons carry the item name in `aria-label`.
 - **Unavailable cards are not faded.** Fading with `opacity` pushes the text below the 4.5:1 contrast ratio, so unavailable ads use a dashed border and a muted background instead.
-- **Only the start screen has artwork so far.** `Illustration` renders named slots (start hero, empty board, summary, ad icon). The hero slot shows the dragon sketch; the other three are still labelled placeholders, so more artwork can be added later without touching any logic. The image is kept in the repo (`src/assets/`) and imported by the component, so it is fingerprinted by Vite and the app does not depend on another site being online.
+- **Artwork exists for two slots so far.** `Illustration` renders named slots (start hero, empty board, summary, ad icon). The start screen shows the "Missing Zelda" poster under the logo and the summary screen shows the dragon-in-the-barn sketch; the empty-board and ad-icon slots are still labelled placeholders, so more artwork can be added later by adding one entry to a table, without touching any logic. The images are kept in the repo (`src/assets/`) and imported by the component, so Vite fingerprints them and the app does not depend on another site being online.
 
 **Testing**
 
@@ -212,12 +212,13 @@ Things that were done differently from the obvious route, and why.
 - **Keyboard focus** is not restored after Solve, Buy or Retry: the pressed button is disabled while the request runs and the card may disappear, so focus can fall back to the page. Play still works, but it is tedious.
 - **An identical error shown twice** by two different failing actions, without dismissing in between, is not announced the second time.
 - **The reputation endpoint** (`/investigate/reputation`) is not used.
-- **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and artwork for the empty board, summary and ad icon.
+- **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and artwork for the empty board and the ad icon.
 
 ## Credits
 
-The start-screen images and the favicon are artwork from the Dragons of Mugloar game. They are not original to this project.
+The images and the favicon are artwork from the Dragons of Mugloar game. They are not original to this project.
 
-- **Dragon sketch** (`src/assets/dragon-in-barn.webp`), from `https://dragonsofmugloar.com/assets/dragonInBarnOnPaper.png`. The original is a 2100 x 1500 PNG of 5.2 MB; the copy here is resized to 1200 px wide and converted to WebP (about 220 KB, transparency kept) so the start screen loads quickly.
+- **"Missing Zelda" poster** (`src/assets/zelda-on-paper.webp`), shown on the start screen, from `https://dragonsofmugloar.com/assets/zeldaOnPaper.png`. The original is a 1567 x 1427 PNG of 1.5 MB; the copy here is resized to 1200 px wide and converted to WebP (about 270 KB, transparency kept). Its alt text repeats the words written on the poster.
+- **Dragon sketch** (`src/assets/dragon-in-barn.webp`), shown on the summary screen, from `https://dragonsofmugloar.com/assets/dragonInBarnOnPaper.png`. The original is a 2100 x 1500 PNG of 5.2 MB; the copy here is resized to 1200 px wide and converted to WebP (about 220 KB, transparency kept).
 - **Title logo** (`src/assets/logo.png`), from `https://dragonsofmugloar.com/assets/logo.png`, used unchanged (1200 x 195, 57 KB). It is the page's `h1`, with "Dragons of Mugloar" as its alt text.
 - **Favicon** (`public/favicon.png`), from `https://dragonsofmugloar.com/assets/favicon.png`, used unchanged (64 x 64, 9.5 KB) and linked from `index.html`.
