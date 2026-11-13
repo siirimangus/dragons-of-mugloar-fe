@@ -1,8 +1,9 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { ApiError } from '../../src/api/errors';
 import { App } from '../../src/App';
 import { FakeDragonsApi } from '../support/fake-dragons-api';
+import { clickWhenEnabled } from '../support/click';
 import { renderWithGame } from '../support/render';
 
 describe('GameScreen', () => {
@@ -21,20 +22,28 @@ describe('GameScreen', () => {
     expect(document.querySelectorAll('#advisor-title')).toHaveLength(1);
   });
 
-  it('disables every control, including the error banner, while an action is in flight', async () => {
+  it('disables the board, shop and End game while an action is in flight', async () => {
     const api = new FakeDragonsApi();
     const { user } = renderWithGame(<App />, api);
     await user.click(screen.getByRole('button', { name: 'Start new game' }));
-    const solveButtons = await screen.findAllByRole('button', { name: 'Solve' });
+    const firstSolve = () => screen.getAllByRole('button', { name: 'Solve' })[0]!;
+    await screen.findAllByRole('button', { name: 'Solve' });
     api.failNext('solve', new ApiError('net', { retryable: true }));
-    await user.click(solveButtons[0]!);
-    await screen.findByRole('alert');
+    await clickWhenEnabled(user, firstSolve);
 
     const release = api.hold('solve');
-    await user.click(solveButtons[1]!);
-    expect(await screen.findByRole('button', { name: 'Retry' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'End game' })).toBeDisabled();
+    await clickWhenEnabled(user, firstSolve);
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'End game' })).toBeDisabled();
+      for (const button of screen.getAllByRole('button', { name: /^Solve|^Buy/ })) {
+        expect(button).toBeDisabled();
+      }
+      // The banner is cleared when an action starts; if it is still shown, it must be disabled too.
+      const banner = screen.queryByRole('alert');
+      if (banner) {
+        for (const button of within(banner).getAllByRole('button')) expect(button).toBeDisabled();
+      }
+    });
     release();
   });
 });
