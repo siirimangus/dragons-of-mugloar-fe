@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { advise } from '../../src/domain/advisor';
+import { MAX_POTIONS } from '../../src/domain/tuning';
 import { ALL_BOUGHT, makeAd, makeSession, SHOP, TRAP_MESSAGE } from '../support/builders';
 
 const good = makeAd({ adId: 'good', probability: 'Piece of cake', reward: 60 });
@@ -109,7 +110,7 @@ describe('advise', () => {
             kind: 'none',
             targetId: null,
             headline: 'No move available',
-            reason: 'The board is empty and a potion is out of reach. You can end the game.',
+            reason: 'The board is empty and no potion is available. You can end the game.',
             confirm: false,
         });
     });
@@ -148,6 +149,49 @@ describe('advise', () => {
         });
         expect(advice.reason).toContain('roughly doubles the rewards');
         expect(advice.reason).toContain('do not change your odds');
+    });
+
+    it('still heals one short of the potion limit', () => {
+        const advice = advise({
+            ...base,
+            purchases: { ...ALL_BOUGHT, hpot: MAX_POTIONS - 1 },
+            session: makeSession({ lives: 1, gold: 500 }),
+            ads: [good],
+        });
+        expect(advice).toMatchObject({ kind: 'buy', targetId: 'hpot' });
+    });
+
+    it('stops recommending a potion once the limit is reached, even with lives and gold to spare', () => {
+        const advice = advise({
+            ...base,
+            purchases: { ...ALL_BOUGHT, hpot: MAX_POTIONS },
+            session: makeSession({ lives: 1, gold: 500 }),
+            ads: [good],
+        });
+        expect(advice.kind).not.toBe('buy');
+        expect(advice).toMatchObject({ kind: 'solve', targetId: 'good' });
+    });
+
+    it('stops waiting with a potion once the limit is reached, forcing the least bad ad', () => {
+        const advice = advise({
+            ...base,
+            purchases: { ...ALL_BOUGHT, hpot: MAX_POTIONS },
+            session: makeSession({ gold: 500 }),
+            ads: [bad],
+        });
+        expect(advice).toMatchObject({ kind: 'solve', targetId: 'bad' });
+        expect(advice.reason).toContain('no potion available');
+    });
+
+    it('solves a trap as a last resort once the potion limit is reached', () => {
+        const advice = advise({
+            ...base,
+            purchases: { ...ALL_BOUGHT, hpot: MAX_POTIONS },
+            session: makeSession({ gold: 500 }),
+            ads: [trap],
+        });
+        expect(advice).toMatchObject({ kind: 'solve', targetId: 'trap', confirm: true });
+        expect(advice.reason).toContain('no potion is available');
     });
 
     it('puts healing before upgrading and upgrading before solving', () => {

@@ -70,12 +70,14 @@ The difficulty labels on ads ("Sure thing", "Risky", ...) are turned into number
 
 The advisor's rules in detail:
 
-1. **Heal:** 2 or fewer lives and at least 50 gold: buy a healing potion.
-2. **Upgrade:** the next upgrade in a fixed cost-effective order (`cs, gas, wax, tricks, wingpot, ch, rf, iron, mtrix, wingpotmax`) that has not been bought, if at least 50 gold is left afterwards. This is where the score comes from: upgrades roughly double the rewards the board offers (they do **not** improve your odds, see below).
+1. **Heal:** 2 or fewer lives and at least 50 gold: buy a healing potion, as long as the potion limit (see below) has not been reached.
+2. **Upgrade:** the next upgrade in a fixed cost-effective order (`cs, gas, wax, tricks, wingpot, ch, rf, iron, mtrix, wingpotmax`) that has not been bought, if at least 50 gold is left afterwards. This is where the score comes from: upgrades roughly double the rewards the board offers (they do **not** improve your odds, see below). Unlike potions, upgrades have no purchase limit of their own; there are only ten of them and each is useful once, which is a limit in itself.
 3. **Solve:** the best non-trap ad whose value is at least 0. That ad also gets a "Recommended" badge.
-4. **Wait:** with no safe ad, or only bad ones, a potion buys a fresh board and a spare life. It is worth buying whenever it is affordable, with no gold held back: turns are free and gold has no use outside the shop. (The backend measured this at about +400 points a game against keeping a reserve.)
-5. **Fallback:** with no gold for a potion, the least bad safe ad, with a warning.
-6. **Last resort:** when only traps are left and a potion is out of reach, solve a trap. It almost certainly costs a life, but the turn only advances when you act, so nothing else refreshes the board; standing still would freeze the game. The advisor asks for confirmation first. "No move available" is therefore only reached on a genuinely empty board.
+4. **Wait:** with no safe ad, or only bad ones, a potion buys a fresh board and a spare life, as long as the limit allows it. It is worth buying whenever it is affordable, with no gold held back: turns are free and gold has no use outside the shop. (The backend measured this at about +400 points a game against keeping a reserve.)
+5. **Fallback:** with no potion available, the least bad safe ad, with a warning.
+6. **Last resort:** when only traps are left and no potion is available, solve a trap. It almost certainly costs a life, but the turn only advances when you act, so nothing else refreshes the board; standing still would freeze the game. The advisor asks for confirmation first. "No move available" is therefore only reached on a genuinely empty board.
+
+**The potion limit.** A healing potion is cheap relative to typical gold income and heals at any life total, so without a cap a player could keep a full life bar forever and never need to risk a worse ad. At most 10 can be bought in a game (`MAX_POTIONS` in `src/domain/tuning.ts`); the Shop's "Healing" group is labelled with the cap ("Healing (max 10 lives)"), and its Buy button disables with a "limit reached" note once it is spent. Upgrades are not capped this way. Past the limit the advisor falls straight to solving the best available ad, bad ones included, which is the point: a long game eventually has to take on real risk.
 
 ## Architecture
 
@@ -158,7 +160,7 @@ These were verified against the live API in the backend project and shaped the d
 - **`highScore` is always 0.** Both `/game/start` and `/solve` return the field, but it stayed 0 across every game sampled, even with the score at 214. It is not read, and it is not in `Session`.
 - **Late boards can be all traps.** Any action that advances the turn refreshes the board; a healing potion is the cheapest one, which is why the advisor can recommend "waiting" by buying one.
 - **Every call advances the turn**, including purchases and failed purchases.
-- **Lives are not capped**, and healing potions work at full health.
+- **Lives are not capped**, and healing potions work at full health. The app imposes its own limit on how many can be bought (see [Decision tools](#decision-tools)), since the API itself never stops you.
 - **Types differ from the docs.** `reward` is a number although the docs say string (a numeric string is accepted too), and `shoppingSuccess` may arrive as a boolean or a string.
 - **Games expire** on the server: an old game id answers 404, so resuming a game after a reload is not supported.
 - **CORS is open** (`access-control-allow-origin: *`), so the browser can call the API directly.

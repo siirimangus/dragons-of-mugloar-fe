@@ -41,6 +41,14 @@ export const HEAL_ITEM_ID = 'hpot';
 export const HEAL_THRESHOLD = 2;
 /** Gold to keep after buying an upgrade, so a healing potion stays affordable. */
 export const RESERVE_GOLD = 50;
+/**
+ * Healing potions allowed per game. A potion is cheap next to typical gold income and heals at
+ * any life total, so an uncapped player could buy an unlimited supply and never need to risk a
+ * worse ad. This caps the healing budget at the starting lives plus at most this many bought, so
+ * a long game eventually has to take on riskier ads to keep going. Upgrades have no such cap:
+ * there are only ten of them, each useful once, so they are naturally self-limiting.
+ */
+export const MAX_POTIONS = 10;
 
 /** Cost-effective buying order: 100-gold items first, then the 300-gold ones. */
 export const UPGRADE_ORDER: readonly string[] = [

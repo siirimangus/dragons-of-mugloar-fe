@@ -1,5 +1,5 @@
 import { formatPercent } from '../utils/format';
-import { HEAL_ITEM_ID, HEAL_THRESHOLD, RESERVE_GOLD, UPGRADE_ORDER } from './tuning';
+import { HEAL_ITEM_ID, HEAL_THRESHOLD, MAX_POTIONS, RESERVE_GOLD, UPGRADE_ORDER } from './tuning';
 import type { Ad, Advice, BoardEntry, Session, ShopItem } from './types';
 import { describeAd } from './value';
 
@@ -36,7 +36,10 @@ function solve(entry: BoardEntry, reason: string, confirm = false): Advice {
 export function advise(input: AdviceInput): Advice {
     const { session, ads, shop, purchases, unavailableAdIds } = input;
     const heal = shop.find((item) => item.id === HEAL_ITEM_ID);
-    const canHeal = heal !== undefined && session.gold >= heal.cost;
+    const canHeal =
+        heal !== undefined &&
+        session.gold >= heal.cost &&
+        (purchases[HEAL_ITEM_ID] ?? 0) < MAX_POTIONS;
 
     const available = ads
         .filter((ad) => !unavailableAdIds.includes(ad.adId))
@@ -94,7 +97,7 @@ export function advise(input: AdviceInput): Advice {
     if (safest) {
         return solve(
             safest,
-            `No good options and no gold for a potion: this is the least bad message, with about ${formatPercent(safest.insight.probability)} chance. You may lose a life.`,
+            `No good options and no potion available: this is the least bad message, with about ${formatPercent(safest.insight.probability)} chance. You may lose a life.`,
         );
     }
 
@@ -105,7 +108,7 @@ export function advise(input: AdviceInput): Advice {
     if (trap) {
         return solve(
             trap,
-            'Only traps are left and you cannot afford a potion. Solving one almost certainly costs a life, but nothing else refreshes the board: the turn only moves when you act.',
+            'Only traps are left and no potion is available. Solving one almost certainly costs a life, but nothing else refreshes the board: the turn only moves when you act.',
             true,
         );
     }
@@ -114,7 +117,7 @@ export function advise(input: AdviceInput): Advice {
         kind: 'none',
         targetId: null,
         headline: 'No move available',
-        reason: 'The board is empty and a potion is out of reach. You can end the game.',
+        reason: 'The board is empty and no potion is available. You can end the game.',
         confirm: false,
     };
 }
