@@ -4,8 +4,3 @@
     gap: var(--space-4);
     flex-wrap: wrap;
 }
-
-.hidden {
-    font-size: var(--font-size-small);
-    color: var(--color-muted);
-}

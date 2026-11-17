@@ -18,29 +18,16 @@ type Props = {
 
 export function AdBoard({ ads, advisedAdId, unavailableAdIds, status, disabled, onSolve }: Props) {
     const [sortKey, setSortKey] = useState<SortKey>('value');
-    const [hideTraps, setHideTraps] = useState(true);
 
-    // Keys come from the position in the original list so sorting/filtering never remounts a card.
+    // Keys come from the position in the original list so sorting never remounts a card.
     const keys = new Map(ads.map((ad, index) => [ad, `${ad.adId}:${index}`]));
-    // The advised ad stays on the board even when it is a trap: the advisor only ever recommends
-    // one as a last resort, and advice you cannot see is no help.
-    const { entries, hiddenTrapCount } = arrangeBoard(ads, {
-        sortKey,
-        hideTraps,
-        keepAdId: advisedAdId,
-    });
+    const entries = arrangeBoard(ads, sortKey);
     const loading = status === 'loading';
 
     return (
         <section className={styles.board} aria-labelledby="board-title" aria-busy={loading}>
             <h2 id="board-title">Message board</h2>
-            <AdFilters
-                sortKey={sortKey}
-                hideTraps={hideTraps}
-                hiddenTrapCount={hiddenTrapCount}
-                onSortChange={setSortKey}
-                onHideTrapsChange={setHideTraps}
-            />
+            <AdFilters sortKey={sortKey} onSortChange={setSortKey} />
             {loading && <p role="status">Loading messages...</p>}
             {entries.length === 0 && !loading ? (
                 <div className={styles.empty}>

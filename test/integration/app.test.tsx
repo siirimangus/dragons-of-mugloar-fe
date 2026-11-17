@@ -20,14 +20,14 @@ async function startGame(options: FakeOptions = {}, api = new FakeDragonsApi(opt
 const stat = (label: string) => within(screen.getByText(label).closest('div')!);
 
 describe('playing the game', () => {
-    it('starts a game and shows the header, the board without traps, and the shop', async () => {
+    it('starts a game and shows the header, the board including traps, and the shop', async () => {
         await startGame();
         expect(stat('Score').getByText('0')).toBeInTheDocument();
         expect(stat('Lives').getByText('3')).toBeInTheDocument();
         expect(screen.getByText('Help Ann to fix their wagon')).toBeInTheDocument();
         expect(screen.getByText('Escort Bob to the market')).toBeInTheDocument();
-        expect(screen.queryByText(/super awesome/i)).not.toBeInTheDocument();
-        expect(screen.getByText('1 trap ad hidden')).toBeInTheDocument();
+        expect(screen.getByText(/super awesome/i)).toBeInTheDocument();
+        expect(screen.getByText('Trap likely')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Buy Healing potion' })).toBeInTheDocument();
     });
 
@@ -64,7 +64,6 @@ describe('playing the game', () => {
 
     it('asks for confirmation before solving a trap and loses a life when it fails', async () => {
         const { user } = await startGame();
-        await user.click(screen.getByRole('checkbox', { name: /hide trap ads/i }));
         const trapCard = screen.getByText('Trap likely').closest('li')!;
         await user.click(within(trapCard).getByRole('button', { name: 'Solve anyway' }));
         await user.click(

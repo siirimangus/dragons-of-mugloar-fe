@@ -2,7 +2,7 @@
 
 A React web app for playing [Dragons of Mugloar](https://dragonsofmugloar.com/) in the browser. You start a game, read the message board, pick the ads you want to solve, buy items in the shop and watch your score, gold and lives. The goal is to pass **1000 points**.
 
-On top of the basics it has tools that help you decide: every ad shows its odds, expected value and risk, trap ads are detected and hidden, the board can be sorted and filtered, and an advisor panel suggests the next move with a one-click button.
+On top of the basics it has tools that help you decide: every ad shows its odds, expected value and risk, trap ads are detected and flagged, the board can be sorted, and an advisor panel suggests the next move with a one-click button.
 
 This is the frontend half of an assignment. The backend half, a bot that plays the same game on its own, lives in a separate project (`dragons-of-mugloar-be`) and is where the live API facts used here were measured.
 
@@ -57,16 +57,16 @@ On screens narrower than about 800px the layout becomes one column with Board, S
 
 ## Decision tools
 
-The difficulty labels on ads ("Sure thing", "Risky", ...) are turned into numbers, and everything else is computed from them while rendering (nothing derived is stored in state). Each ad is described exactly once per board by `arrangeBoard`, which filters, sorts and attaches the insight in one pass. The measured constants are in `src/domain/tuning.ts` (calibrated on the live API in the backend project, 40 games, Nov 2026, with the sample behind each number).
+The difficulty labels on ads ("Sure thing", "Risky", ...) are turned into numbers, and everything else is computed from them while rendering (nothing derived is stored in state). Each ad is described exactly once per board by `arrangeBoard`, which sorts and attaches the insight in one pass. The measured constants are in `src/domain/tuning.ts` (calibrated on the live API in the backend project, 40 games, Nov 2026, with the sample behind each number).
 
-| Tool          | How it works                                                                                                                                                                                      |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Odds          | Looked up from the label, for example Piece of cake 94%, Gamble 51%, Playing with fire 23%, Impossible 0%. An unknown label counts as 30%.                                                        |
-| Value         | `odds x reward - (1 - odds) x 150`, where 150 is what losing a life is worth in gold. The card shows both halves ("Expected gain", "Risk cost") next to the total, so the trade-off is visible.   |
-| Risk badge    | Low from 85% odds, medium from 55%, high below that. Shown as text as well as colour.                                                                                                             |
-| Trap detector | An ad whose message matches `/super\s+awesome/i` is a trap: huge reward, top label, but it costs a life. Traps are hidden by default, shown with a warning when you ask, and need "Solve anyway". |
-| Sort          | Value (default), reward, risk (lowest first) or expiry (soonest first). Ties keep the API order.                                                                                                  |
-| Advisor       | One suggestion, evaluated in order: heal, buy the next upgrade, solve the best safe ad, wait with a potion, fall back to the least bad ad, or, with nothing else left, solve a trap.              |
+| Tool          | How it works                                                                                                                                                                                    |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Odds          | Looked up from the label, for example Piece of cake 94%, Gamble 51%, Playing with fire 23%, Impossible 0%. An unknown label counts as 30%.                                                      |
+| Value         | `odds x reward - (1 - odds) x 150`, where 150 is what losing a life is worth in gold. The card shows both halves ("Expected gain", "Risk cost") next to the total, so the trade-off is visible. |
+| Risk badge    | Low from 85% odds, medium from 55%, high below that. Shown as text as well as colour.                                                                                                           |
+| Trap detector | An ad whose message matches `/super\s+awesome/i` is a trap: huge reward, top label, but it costs a life. Shown on the board with a warning, and needs "Solve anyway" plus a confirmation.       |
+| Sort          | Value (default), reward, risk (lowest first) or expiry (soonest first). Ties keep the API order.                                                                                                |
+| Advisor       | One suggestion, evaluated in order: heal, buy the next upgrade, solve the best safe ad, wait with a potion, fall back to the least bad ad, or, with nothing else left, solve a trap.            |
 
 The advisor's rules in detail:
 
@@ -75,7 +75,7 @@ The advisor's rules in detail:
 3. **Solve:** the best non-trap ad whose value is at least 0. That ad also gets a "Recommended" badge.
 4. **Wait:** with no safe ad, or only bad ones, a potion buys a fresh board and a spare life. It is worth buying whenever it is affordable, with no gold held back: turns are free and gold has no use outside the shop. (The backend measured this at about +400 points a game against keeping a reserve.)
 5. **Fallback:** with no gold for a potion, the least bad safe ad, with a warning.
-6. **Last resort:** when only traps are left and a potion is out of reach, solve a trap. It almost certainly costs a life, but the turn only advances when you act, so nothing else refreshes the board; standing still would freeze the game. The advisor asks for confirmation first, and the recommended trap stays on the board even while "Hide trap ads" is ticked. "No move available" is therefore only reached on a genuinely empty board.
+6. **Last resort:** when only traps are left and a potion is out of reach, solve a trap. It almost certainly costs a life, but the turn only advances when you act, so nothing else refreshes the board; standing still would freeze the game. The advisor asks for confirmation first. "No move available" is therefore only reached on a genuinely empty board.
 
 ## Architecture
 
@@ -139,7 +139,7 @@ Latest run: 96.8% statements, 93.3% branches, 97.2% functions, 98.9% lines.
 | Domain      | Odds, value, risk boundaries, trap detection, sorting and every advisor branch, mostly table-driven.                                                                                                                                            |
 | API         | zod schemas against fixtures recorded from the real API, strict Base64 and ROT13 decoding (including the ad id), retry and backoff, the HTTP client with a stub `fetch`.                                                                        |
 | State       | Every reducer action, immutability, the full log kept newest first, and the async actions against the fake API.                                                                                                                                 |
-| Components  | Cards, board sorting and filtering, shop affordability (including gold exactly equal to the cost), advisor, error banner, focus handling in confirmations.                                                                                      |
+| Components  | Cards, board sorting, shop affordability (including gold exactly equal to the cost), advisor, error banner, focus handling in confirmations.                                                                                                    |
 | Integration | The whole app rendered against an in-memory fake API and played the way a user would: start, solve, buy, trap confirmation, goal, game over, errors and retry, an expired game, duplicate ad ids, and "everything locked while a request runs". |
 
 Tests never call the real API. The fixtures in `test/fixtures` are real responses copied from the backend project; the ROT13 one is synthetic (see below).

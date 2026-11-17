@@ -3,10 +3,7 @@ import styles from './AdFilters.module.css';
 
 type Props = {
     readonly sortKey: SortKey;
-    readonly hideTraps: boolean;
-    readonly hiddenTrapCount: number;
     readonly onSortChange: (key: SortKey) => void;
-    readonly onHideTrapsChange: (hide: boolean) => void;
 };
 
 const OPTIONS: ReadonlyArray<{ key: SortKey; label: string }> = [
@@ -16,13 +13,7 @@ const OPTIONS: ReadonlyArray<{ key: SortKey; label: string }> = [
     { key: 'expiry', label: 'Expires soonest' },
 ];
 
-export function AdFilters({
-    sortKey,
-    hideTraps,
-    hiddenTrapCount,
-    onSortChange,
-    onHideTrapsChange,
-}: Props) {
+export function AdFilters({ sortKey, onSortChange }: Props) {
     return (
         <div className={styles.filters}>
             <label>
@@ -38,19 +29,6 @@ export function AdFilters({
                     ))}
                 </select>
             </label>
-            <label>
-                <input
-                    type="checkbox"
-                    checked={hideTraps}
-                    onChange={(event) => onHideTrapsChange(event.target.checked)}
-                />{' '}
-                Hide trap ads
-            </label>
-            {hideTraps && hiddenTrapCount > 0 && (
-                <span className={styles.hidden}>
-                    {hiddenTrapCount} trap {hiddenTrapCount === 1 ? 'ad' : 'ads'} hidden
-                </span>
-            )}
         </div>
     );
 }

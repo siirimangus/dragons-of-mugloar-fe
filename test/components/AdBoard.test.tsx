@@ -53,25 +53,18 @@ describe('AdBoard', () => {
         vi.restoreAllMocks();
     });
 
-    it('lists ads best value first and hides traps by default', () => {
+    it('lists every ad, trap ads included, best value first by default', () => {
         renderBoard();
-        expect(cardMessages()).toEqual(['Sure job', 'Cake job', 'Risky job']);
-        expect(screen.getByText('1 trap ad hidden')).toBeInTheDocument();
-    });
-
-    it('shows traps again when the toggle is switched off', async () => {
-        const user = userEvent.setup();
-        renderBoard();
-        await user.click(screen.getByRole('checkbox', { name: /hide trap ads/i }));
-        expect(screen.getAllByRole('listitem')).toHaveLength(4);
+        // trap: 0.98*421 - 0.02*150 = 409.58, sure: 55.8, cake: 9.8, risky: -44.4
+        expect(cardMessages()).toEqual([TRAP_MESSAGE, 'Sure job', 'Cake job', 'Risky job']);
         expect(screen.getByText('Trap likely')).toBeInTheDocument();
     });
 
     it.each([
-        ['reward', ['Risky job', 'Sure job', 'Cake job']],
-        ['risk', ['Sure job', 'Cake job', 'Risky job']],
-        ['expiry', ['Risky job', 'Sure job', 'Cake job']],
-        ['value', ['Sure job', 'Cake job', 'Risky job']],
+        ['reward', [TRAP_MESSAGE, 'Risky job', 'Sure job', 'Cake job']],
+        ['risk', ['Sure job', TRAP_MESSAGE, 'Cake job', 'Risky job']],
+        ['expiry', ['Risky job', TRAP_MESSAGE, 'Sure job', 'Cake job']],
+        ['value', [TRAP_MESSAGE, 'Sure job', 'Cake job', 'Risky job']],
     ])('sorts by %s', async (key, expected) => {
         const user = userEvent.setup();
         renderBoard();
@@ -92,16 +85,15 @@ describe('AdBoard', () => {
         renderBoard({ advisedAdId: 'sure' });
         expect(screen.getAllByText('Recommended')).toHaveLength(1);
         expect(
-            within(screen.getAllByRole('listitem')[0]!).getByText('Recommended'),
+            within(screen.getByText('Sure job').closest('li')!).getByText('Recommended'),
         ).toBeInTheDocument();
     });
 
     it('solves the clicked ad', async () => {
         const user = userEvent.setup();
         const { onSolve } = renderBoard();
-        await user.click(
-            within(screen.getAllByRole('listitem')[0]!).getByRole('button', { name: 'Solve' }),
-        );
+        const sureCard = within(screen.getByText('Sure job').closest('li')!);
+        await user.click(sureCard.getByRole('button', { name: 'Solve' }));
         expect(onSolve).toHaveBeenCalledWith('sure');
     });
 
@@ -139,12 +131,5 @@ describe('AdBoard', () => {
         });
         expect(screen.getAllByRole('listitem')).toHaveLength(2);
         expect(error).not.toHaveBeenCalled();
-    });
-
-    it('keeps an advised trap on the board even while traps are hidden', () => {
-        renderBoard({ advisedAdId: 'trap' });
-        expect(screen.getByText(TRAP_MESSAGE)).toBeInTheDocument();
-        expect(screen.getByText('Recommended')).toBeInTheDocument();
-        expect(screen.queryByText(/trap ads? hidden/)).not.toBeInTheDocument();
     });
 });
