@@ -15,7 +15,7 @@ describe('StartScreen', () => {
             'data-slot',
             'hero',
         );
-        expect(screen.getByText(/reach 1000 points/i)).toBeInTheDocument();
+        expect(screen.getByText(/watch out for traps/i)).toBeInTheDocument();
     });
 
     it('shows the logo as the page title, above the hero picture', () => {

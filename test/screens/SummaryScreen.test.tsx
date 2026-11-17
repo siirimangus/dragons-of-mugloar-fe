@@ -24,7 +24,6 @@ describe('SummaryScreen', () => {
             expect(screen.getByRole('heading', { name: 'Game over' })).toHaveFocus(),
         );
         expect(screen.getByText('Final score')).toBeInTheDocument();
-        expect(screen.getByText(/goal not reached/i)).toBeInTheDocument();
         expect(screen.getByRole('img', { name: /dragon looking out/i })).toHaveAttribute(
             'data-slot',
             'summary',

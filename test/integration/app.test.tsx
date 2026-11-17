@@ -45,17 +45,6 @@ describe('playing the game', () => {
         expect(screen.getByText('Turn 1: Solved: Help Ann to fix their wagon')).toBeInTheDocument();
     });
 
-    it('shows the goal as reached once the score passes 1000', async () => {
-        const { user } = await startGame({ score: 990 });
-        expect(screen.queryByText(/goal reached/i)).not.toBeInTheDocument();
-        await user.click(
-            within(screen.getByText('Recommended').closest('li')!).getByRole('button', {
-                name: 'Solve',
-            }),
-        );
-        expect(await screen.findByText('Goal reached!')).toBeInTheDocument();
-    });
-
     it('buys an item, updates gold, lives and the purchase count', async () => {
         const { user } = await startGame({ gold: 100 });
         await user.click(screen.getByRole('button', { name: 'Buy Healing potion' }));
@@ -195,7 +184,6 @@ describe('ending the game', () => {
         await user.click(await screen.findByRole('button', { name: 'Yes, end game' }));
 
         expect(await screen.findByRole('heading', { name: 'Game over' })).toBeInTheDocument();
-        expect(screen.getByText(/goal reached/i)).toBeInTheDocument();
         expect(screen.getByText('1200')).toBeInTheDocument();
     });
 });

@@ -17,7 +17,7 @@ export function StartScreen() {
             <ul className={styles.how}>
                 <li>Read the messages on the board and pick the ones worth solving.</li>
                 <li>Spend gold in the shop on potions and upgrades.</li>
-                <li>Reach 1000 points, and watch out for traps!</li>
+                <li>Watch out for traps!</li>
             </ul>
             {error && (
                 <ErrorBanner

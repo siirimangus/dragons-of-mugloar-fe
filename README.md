@@ -46,18 +46,18 @@ The app talks to `https://dragonsofmugloar.com/api/v2` directly from the browser
 
 ## Playing the game
 
-1. **Start screen.** Read the three rules and press **Start new game**.
-2. **Game screen.** The header shows score, gold, lives, level and turn, plus a progress bar toward 1000 points. The message board lists the ads; the shop, the advisor and the activity log sit beside it. The activity log keeps every turn of the game, newest first, and scrolls once it gets long.
+1. **Start screen.** Read the two rules and press **Start new game**.
+2. **Game screen.** The header shows score, gold, lives, level and turn. The message board lists the ads; the shop, the advisor and the activity log sit beside it. The activity log keeps every turn of the game, newest first, and scrolls once it gets long.
 3. **Solve** an ad or **buy** an item. Every action takes one turn and the board refreshes afterwards. While a request is running, every action button is disabled.
-4. **Summary screen.** The game ends when you run out of lives or press **End game** (it asks for confirmation). You see the final score, whether the goal was reached, solved and failed counts, gold spent, turns and items bought, and can play again.
+4. **Summary screen.** The game ends when you run out of lives or press **End game** (it asks for confirmation). You see the final score, solved and failed counts, gold spent, turns and items bought, and can play again.
 
-Lives are not capped by the API, so a strong dragon never dies by itself. Reaching 1000 points does not stop the game; the goal bar just says "Goal reached!" and you keep playing until you end it.
+Lives are not capped by the API, so a strong dragon never dies by itself: the game goes on until you end it.
 
 On screens narrower than about 800px the layout becomes one column with Board, Shop and Activity tabs. The advisor stays at the top of the Board tab, and the last result stays visible on every tab.
 
 ## Decision tools
 
-The difficulty labels on ads ("Sure thing", "Risky", ...) are turned into numbers, and everything else is computed from them while rendering (nothing derived is stored in state). Each ad is described exactly once per board by `arrangeBoard`, which filters, sorts and attaches the insight in one pass. The measured constants are in `src/domain/tuning.ts` (calibrated on the live API in the backend project, 40 games, Nov 2026, with the sample behind each number); the 1000-point target lives apart from them in `src/domain/goal.ts`, because it is the brief's goal and not a tuning knob.
+The difficulty labels on ads ("Sure thing", "Risky", ...) are turned into numbers, and everything else is computed from them while rendering (nothing derived is stored in state). Each ad is described exactly once per board by `arrangeBoard`, which filters, sorts and attaches the insight in one pass. The measured constants are in `src/domain/tuning.ts` (calibrated on the live API in the backend project, 40 games, Nov 2026, with the sample behind each number).
 
 | Tool          | How it works                                                                                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -83,10 +83,10 @@ The advisor's rules in detail:
 src/
   main.tsx, App.tsx     mount; App shows the start, game or summary screen by game phase
   screens/              StartScreen/, GameScreen/, SummaryScreen/
-  components/           GameHeader/, GoalBar/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
+  components/           GameHeader/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
                         Advisor/, ActivityLog/, ErrorBanner/, Logo/, Illustration/ (artwork)
   state/                game-reducer.ts, game-context.ts, GameProvider.tsx, use-game-actions.ts
-  domain/               types, tuning, goal, odds, value, traps, board, advisor, shop (pure TypeScript)
+  domain/               types, tuning, odds, value, traps, board, advisor, shop (pure TypeScript)
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
                         decode.ts, decode-ads.ts, retry.ts, errors.ts
   utils/                format.ts: number formatting shared by components and the advisor

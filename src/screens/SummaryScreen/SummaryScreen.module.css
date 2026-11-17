@@ -26,12 +26,3 @@
     font-size: var(--font-size-large);
     font-weight: 600;
 }
-
-.reached {
-    color: var(--color-success);
-    font-weight: 600;
-}
-
-.notReached {
-    color: var(--color-muted);
-}

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Session } from '../../domain/types';
-import { GoalBar } from '../GoalBar';
 import { Logo } from '../Logo';
 import styles from './GameHeader.module.css';
 
@@ -88,7 +87,6 @@ export function GameHeader({ session, disabled, onEndGame, focusTitleOnMount = f
                 <Stat label="Level" value={session.level} />
                 <Stat label="Turn" value={session.turn} />
             </dl>
-            <GoalBar score={session.score} />
         </header>
     );
 }
