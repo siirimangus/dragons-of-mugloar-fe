@@ -97,7 +97,74 @@
     flex-wrap: wrap;
 }
 
-/* Value is the sum of the two columns before it, so it carries the weight. */
 .value {
     font-weight: 600;
+}
+
+.valueLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+/* Anchors the tooltip panel to the info button; shown on hover or keyboard focus. */
+.info {
+    position: relative;
+    display: inline-flex;
+}
+
+.infoButton {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 1px solid currentcolor;
+    border-radius: 50%;
+    color: var(--color-muted);
+    font-size: 0.7rem;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1;
+    cursor: help;
+}
+
+.infoButton:hover,
+.infoButton:focus-visible {
+    color: var(--color-accent);
+}
+
+.infoPanel {
+    position: absolute;
+    bottom: calc(100% + var(--space-2));
+    left: 0;
+    z-index: 1;
+    width: max-content;
+    max-width: 16rem;
+    padding: var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+    font-size: var(--font-size-small);
+    font-weight: 400;
+    color: var(--color-text);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.info:hover .infoPanel,
+.info:focus-within .infoPanel {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.infoPanel p {
+    margin: 0;
+}
+
+.infoPanel p + p {
+    margin-top: var(--space-1);
 }

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { Ad, AdInsight, Risk } from '../../domain/types';
+import { LIFE_VALUE } from '../../domain/tuning';
 import { formatPercent, formatValue, pluralize } from '../../utils/format';
 import styles from './AdCard.module.css';
 
@@ -22,9 +23,15 @@ export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolv
     const [confirming, setConfirming] = useState(false);
     const blocked = disabled || unavailable;
     const messageId = useId();
+    const valueInfoId = useId();
     const solveRef = useRef<HTMLButtonElement>(null);
     const cancelRef = useRef<HTMLButtonElement>(null);
     const wasConfirming = useRef(false);
+
+    // The connection Value is built from, spelled out for the info panel below.
+    const gainLine = `Expected gain: ~${formatPercent(insight.probability)} chance × ${ad.reward} gold = ${formatValue(insight.expectedGain)}.`;
+    const riskLine = `Risk cost: ~${formatPercent(1 - insight.probability)} chance of losing a life, priced at ${LIFE_VALUE} gold, = ${formatValue(-insight.riskCost)}.`;
+    const totalLine = `Value: ${Math.round(insight.expectedGain)} minus ${Math.round(insight.riskCost)} = ${formatValue(insight.value)}.`;
 
     useEffect(() => {
         if (confirming) {
@@ -67,15 +74,28 @@ export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolv
                             <dd>~{formatPercent(insight.probability)}</dd>
                         </div>
                         <div>
-                            <dt>Expected gain</dt>
-                            <dd>{formatValue(insight.expectedGain)}</dd>
-                        </div>
-                        <div>
-                            <dt>Risk cost</dt>
-                            <dd>{formatValue(-insight.riskCost)}</dd>
-                        </div>
-                        <div>
-                            <dt>Value</dt>
+                            <dt className={styles.valueLabel}>
+                                Value
+                                <span className={styles.info}>
+                                    <button
+                                        type="button"
+                                        className={styles.infoButton}
+                                        aria-label="How value is calculated"
+                                        aria-describedby={valueInfoId}
+                                    >
+                                        i
+                                    </button>
+                                    <span
+                                        role="tooltip"
+                                        id={valueInfoId}
+                                        className={styles.infoPanel}
+                                    >
+                                        <p>{gainLine}</p>
+                                        <p>{riskLine}</p>
+                                        <p>{totalLine}</p>
+                                    </span>
+                                </span>
+                            </dt>
                             <dd className={styles.value}>{formatValue(insight.value)}</dd>
                         </div>
                         <div>

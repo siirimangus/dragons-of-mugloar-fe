@@ -49,14 +49,24 @@ describe('AdCard', () => {
         expect(screen.getByText('Low risk')).toBeInTheDocument();
     });
 
-    it('shows both halves of the value, so the player can see what risk costs', () => {
+    it('keeps the breakdown off the card and behind an info control instead', () => {
+        renderCard();
+        expect(screen.queryByText('Expected gain')).not.toBeInTheDocument();
+        expect(screen.queryByText('Risk cost')).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'How value is calculated' })).toBeInTheDocument();
+    });
+
+    it('explains the connection between expected gain and risk cost in the info panel', () => {
         renderCard();
         // 0.94 * 63 = 59.22 gold expected, less 0.06 * 150 = 9 for the chance of losing a life.
-        const facts = (term: string) =>
-            screen.getByText(term).parentElement?.querySelector('dd')?.textContent;
-        expect(facts('Expected gain')).toBe('+59');
-        expect(facts('Risk cost')).toBe('-9');
-        expect(facts('Value')).toBe('+50');
+        const info = screen.getByRole('button', { name: 'How value is calculated' });
+        const tooltip = screen.getByRole('tooltip');
+        expect(info).toHaveAttribute('aria-describedby', tooltip.id);
+        expect(tooltip).toHaveTextContent('Expected gain: ~94% chance × 63 gold = +59.');
+        expect(tooltip).toHaveTextContent(
+            'Risk cost: ~6% chance of losing a life, priced at 150 gold, = -9.',
+        );
+        expect(tooltip).toHaveTextContent('Value: 59 minus 9 = +50.');
     });
 
     it('lets a risky ad with a big reward out-value a safe one with a small reward', () => {
