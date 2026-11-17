@@ -37,12 +37,14 @@
 
 /* A single grid cell for all three: a CSS grid row stretches to fit the tallest item sharing it,
    so three separate rows here would each grow to match the board's height, leaving a big blank
-   gap below each short section. Stacking them in one flex column sizes each to its own content. */
+   gap below each short section. Stacking them in one flex column sizes each to its own content.
+   The gap is wider than the board's own internal spacing, so it reads as a break between the
+   Advisor, Shop and Activity sections rather than just more of the same rhythm. */
 .sidebar {
     grid-area: sidebar;
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-5);
     min-width: 0;
 }
 
