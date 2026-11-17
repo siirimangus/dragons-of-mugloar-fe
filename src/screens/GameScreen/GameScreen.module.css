@@ -22,26 +22,32 @@
     padding: 0 var(--space-4);
 }
 
+/*
+ * Flexbox, not CSS Grid: a hidden (display: none) flex item is removed from layout completely, no
+ * leftover gap. A grid item keeps its named row, gap included, even with nothing in it, which is
+ * what made the gap before "Shop" or "Activity" balloon on the narrow tab layout below: each
+ * hidden row ahead of the visible one (two ahead of Shop, three ahead of Activity) still added its
+ * own gap, while Board only ever has one hidden row (advisor's) ahead of it.
+ */
 .grid {
-    display: grid;
+    display: flex;
     gap: var(--space-4);
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    grid-template-areas: 'board sidebar';
-    align-items: start;
+    align-items: flex-start;
     padding: 0 var(--space-4) var(--space-6);
 }
 
 .board {
-    grid-area: board;
+    flex: 2 1 0;
+    min-width: 0;
 }
 
-/* A single grid cell for all three: a CSS grid row stretches to fit the tallest item sharing it,
-   so three separate rows here would each grow to match the board's height, leaving a big blank
-   gap below each short section. Stacking them in one flex column sizes each to its own content.
-   The gap is wider than the board's own internal spacing, so it reads as a break between the
-   Advisor, Shop and Activity sections rather than just more of the same rhythm. */
+/* A single flex item for all three: a CSS grid row stretches to fit the tallest item sharing it,
+   so three separate rows would each grow to match the board's height, leaving a big blank gap
+   below each short section. Stacking them in their own nested flex column sizes each to its own
+   content, and the gap is wider than the board's own internal spacing, so it reads as a break
+   between the Advisor, Shop and Activity sections rather than just more of the same rhythm. */
 .sidebar {
-    grid-area: sidebar;
+    flex: 1 1 0;
     display: flex;
     flex-direction: column;
     gap: var(--space-5);
@@ -54,30 +60,18 @@
     }
 
     .grid {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-areas:
-            'advisor'
-            'board'
-            'shop'
-            'activity';
+        flex-direction: column;
     }
 
-    /* Unwraps the sidebar: its children become direct grid items again, placed by the grid-area
-       each already carries below, so the board/shop/activity tab order still works. */
+    /* Unwraps the sidebar: its children become direct flex items of .grid again, in document
+       order (board, then advisor/shop/activity), so Advisor is pulled back above Board with
+       `order`. Shop and Activity need no reordering: their relative position already matches. */
     .sidebar {
         display: contents;
     }
 
     .advisor {
-        grid-area: advisor;
-    }
-
-    .shop {
-        grid-area: shop;
-    }
-
-    .activity {
-        grid-area: activity;
+        order: -1;
     }
 
     .grid [data-active='false'] {
