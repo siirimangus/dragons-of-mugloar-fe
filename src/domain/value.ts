@@ -3,12 +3,18 @@ import { isTrap } from './traps';
 import { LIFE_VALUE } from './tuning';
 import type { Ad, AdInsight } from './types';
 
-export function adValue(ad: Pick<Ad, 'probability' | 'reward'>): number {
-    const p = successProbability(ad.probability);
-    return p * ad.reward - (1 - p) * LIFE_VALUE;
-}
-
 export function describeAd(ad: Ad): AdInsight {
     const probability = successProbability(ad.probability);
-    return { probability, value: adValue(ad), risk: riskOf(probability), trap: isTrap(ad) };
+    // Kept as two halves rather than one number: the card shows both, so the player can see why a
+    // safe ad usually wins and when a risky one with a big reward finally beats it.
+    const expectedGain = probability * ad.reward;
+    const riskCost = (1 - probability) * LIFE_VALUE;
+    return {
+        probability,
+        expectedGain,
+        riskCost,
+        value: expectedGain - riskCost,
+        risk: riskOf(probability),
+        trap: isTrap(ad),
+    };
 }

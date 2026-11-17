@@ -96,3 +96,8 @@
     gap: var(--space-2);
     flex-wrap: wrap;
 }
+
+/* Value is the sum of the two columns before it, so it carries the weight. */
+.value {
+    font-weight: 600;
+}

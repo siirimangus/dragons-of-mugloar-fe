@@ -1,8 +1,6 @@
 import { useState } from 'react';
+import { arrangeBoard } from '../../domain/board';
 import type { Ad, SortKey } from '../../domain/types';
-import { sortAds, visibleAds } from '../../domain/sort';
-import { isTrap } from '../../domain/traps';
-import { describeAd } from '../../domain/value';
 import type { BoardStatus } from '../../state/game-reducer';
 import { AdCard } from '../AdCard';
 import styles from './AdBoard.module.css';
@@ -24,8 +22,13 @@ export function AdBoard({ ads, advisedAdId, unavailableAdIds, status, disabled, 
 
     // Keys come from the position in the original list so sorting/filtering never remounts a card.
     const keys = new Map(ads.map((ad, index) => [ad, `${ad.adId}:${index}`]));
-    const shown = sortAds(visibleAds(ads, hideTraps), sortKey);
-    const hiddenTrapCount = hideTraps ? ads.filter(isTrap).length : 0;
+    // The advised ad stays on the board even when it is a trap: the advisor only ever recommends
+    // one as a last resort, and advice you cannot see is no help.
+    const { entries, hiddenTrapCount } = arrangeBoard(ads, {
+        sortKey,
+        hideTraps,
+        keepAdId: advisedAdId,
+    });
     const loading = status === 'loading';
 
     return (
@@ -39,18 +42,18 @@ export function AdBoard({ ads, advisedAdId, unavailableAdIds, status, disabled, 
                 onHideTrapsChange={setHideTraps}
             />
             {loading && <p role="status">Loading messages...</p>}
-            {shown.length === 0 && !loading ? (
+            {entries.length === 0 && !loading ? (
                 <div className={styles.empty}>
                     <Illustration slot="empty-board" />
                     <p>No messages right now: buy a potion to wait for new ones.</p>
                 </div>
-            ) : shown.length > 0 ? (
+            ) : entries.length > 0 ? (
                 <ul className={styles.list}>
-                    {shown.map((ad) => (
+                    {entries.map(({ ad, insight }) => (
                         <AdCard
                             key={keys.get(ad)}
                             ad={ad}
-                            insight={describeAd(ad)}
+                            insight={insight}
                             recommended={ad.adId === advisedAdId}
                             unavailable={unavailableAdIds.includes(ad.adId)}
                             disabled={disabled}

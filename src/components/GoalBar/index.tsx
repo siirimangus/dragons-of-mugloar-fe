@@ -1,4 +1,4 @@
-import { GOAL_SCORE } from '../../domain/tuning';
+import { GOAL_SCORE } from '../../domain/goal';
 import styles from './GoalBar.module.css';
 
 export function GoalBar({ score }: { readonly score: number }) {

@@ -49,6 +49,25 @@ describe('AdCard', () => {
         expect(screen.getByText('Low risk')).toBeInTheDocument();
     });
 
+    it('shows both halves of the value, so the player can see what risk costs', () => {
+        renderCard();
+        // 0.94 * 63 = 59.22 gold expected, less 0.06 * 150 = 9 for the chance of losing a life.
+        const facts = (term: string) =>
+            screen.getByText(term).parentElement?.querySelector('dd')?.textContent;
+        expect(facts('Expected gain')).toBe('+59');
+        expect(facts('Risk cost')).toBe('-9');
+        expect(facts('Value')).toBe('+50');
+    });
+
+    it('lets a risky ad with a big reward out-value a safe one with a small reward', () => {
+        // The point of showing the breakdown: at live reward scale safe ads usually win, but once
+        // upgrades inflate the rewards a Gamble can beat a Sure thing, and the numbers show why.
+        const gamble = describeAd(makeAd({ probability: 'Gamble', reward: 260 }));
+        const sure = describeAd(makeAd({ probability: 'Sure thing', reward: 40 }));
+        expect(gamble.value).toBeGreaterThan(sure.value);
+        expect(gamble.riskCost).toBeGreaterThan(sure.riskCost);
+    });
+
     it('solves with one click for a normal ad', async () => {
         const user = userEvent.setup();
         const { onSolve } = renderCard();

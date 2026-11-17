@@ -140,4 +140,11 @@ describe('AdBoard', () => {
         expect(screen.getAllByRole('listitem')).toHaveLength(2);
         expect(error).not.toHaveBeenCalled();
     });
+
+    it('keeps an advised trap on the board even while traps are hidden', () => {
+        renderBoard({ advisedAdId: 'trap' });
+        expect(screen.getByText(TRAP_MESSAGE)).toBeInTheDocument();
+        expect(screen.getByText('Recommended')).toBeInTheDocument();
+        expect(screen.queryByText(/trap ads? hidden/)).not.toBeInTheDocument();
+    });
 });

@@ -111,7 +111,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                     lives: result.lives,
                     gold: result.gold,
                     score: result.score,
-                    highScore: result.highScore,
                     turn: result.turn,
                 },
                 phase: result.lives <= 0 ? 'finished' : state.phase,

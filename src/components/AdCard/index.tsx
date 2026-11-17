@@ -67,8 +67,16 @@ export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolv
                             <dd>~{formatPercent(insight.probability)}</dd>
                         </div>
                         <div>
+                            <dt>Expected gain</dt>
+                            <dd>{formatValue(insight.expectedGain)}</dd>
+                        </div>
+                        <div>
+                            <dt>Risk cost</dt>
+                            <dd>{formatValue(-insight.riskCost)}</dd>
+                        </div>
+                        <div>
                             <dt>Value</dt>
-                            <dd>{formatValue(insight.value)}</dd>
+                            <dd className={styles.value}>{formatValue(insight.value)}</dd>
                         </div>
                         <div>
                             <dt>Risk</dt>

@@ -34,7 +34,6 @@ export class FakeDragonsApi implements DragonsApi {
             gold: options.gold ?? 0,
             level: 0,
             score: options.score ?? 0,
-            highScore: 0,
             turn: 0,
         };
     }
@@ -103,13 +102,11 @@ export class FakeDragonsApi implements DragonsApi {
             gold: success ? this.state.gold + ad.reward : this.state.gold,
             score: success ? this.state.score + ad.reward : this.state.score,
         };
-        this.state = { ...this.state, highScore: Math.max(this.state.highScore, this.state.score) };
         return {
             success,
             lives: this.state.lives,
             gold: this.state.gold,
             score: this.state.score,
-            highScore: this.state.highScore,
             turn: this.state.turn,
             message: trap
                 ? 'You fell into a trap set up, by people who did not appreciate your dealings.'

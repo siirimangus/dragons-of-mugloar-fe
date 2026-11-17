@@ -40,7 +40,6 @@ export function makeSession(overrides: Partial<Session> = {}): Session {
         gold: 0,
         level: 0,
         score: 0,
-        highScore: 0,
         turn: 0,
         ...overrides,
     };

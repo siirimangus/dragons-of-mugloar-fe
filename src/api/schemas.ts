@@ -14,13 +14,14 @@ const booleanLike = z.union([
     z.enum(['true', 'false']).transform((value) => value === 'true'),
 ]);
 
+// `highScore` is in both responses but the live API leaves it at 0 for every game, so it is not
+// read. Extra keys are ignored, so it simply passes through unvalidated.
 const sessionSchema = z.object({
     gameId: z.string().min(1),
     lives: count,
     gold: count,
     level: count,
     score: count,
-    highScore: count,
     turn: count,
 });
 
@@ -43,7 +44,6 @@ const solveSchema = z.object({
     lives: count,
     gold: count,
     score: count,
-    highScore: count,
     turn: count,
     message: z.string(),
 });

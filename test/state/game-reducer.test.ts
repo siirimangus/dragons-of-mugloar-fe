@@ -25,7 +25,6 @@ const solveResult = (overrides: Partial<SolveResult> = {}): SolveResult => ({
     lives: 3,
     gold: 250,
     score: 50,
-    highScore: 0,
     turn: 1,
     message: 'You successfully solved the mission!',
     ...overrides,

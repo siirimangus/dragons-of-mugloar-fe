@@ -3,7 +3,7 @@ import { advise } from '../../src/domain/advisor';
 import { ALL_BOUGHT, makeAd, makeSession, SHOP, TRAP_MESSAGE } from '../support/builders';
 
 const good = makeAd({ adId: 'good', probability: 'Piece of cake', reward: 60 });
-const bad = makeAd({ adId: 'bad', probability: 'Risky', reward: 80 }); // value -44.2
+const bad = makeAd({ adId: 'bad', probability: 'Risky', reward: 80 }); // value -48.8
 const trap = makeAd({
     adId: 'trap',
     message: TRAP_MESSAGE,
@@ -88,33 +88,41 @@ describe('advise', () => {
         });
     });
 
-    it('says there is no safe move with only traps and no gold', () => {
+    it('solves a trap as a last resort, because only acting refreshes the board', () => {
         const advice = advise({ ...base, session: makeSession({ gold: 49 }), ads: [trap] });
-        expect(advice).toMatchObject({
-            kind: 'none',
-            targetId: null,
-            headline: 'No safe move',
-            reason: 'No safe messages are left and a potion is out of reach. You can end the game.',
-        });
+        expect(advice).toMatchObject({ kind: 'solve', targetId: 'trap', confirm: true });
+        expect(advice.reason).toContain('nothing else refreshes the board');
     });
 
-    it('uses the same no-safe-messages wording for an empty board', () => {
+    it('picks the best-paying trap when it has to solve one', () => {
+        const richer = makeAd({ ...trap, adId: 'richer', reward: 500 });
+        const advice = advise({ ...base, session: makeSession({ gold: 0 }), ads: [trap, richer] });
+        expect(advice).toMatchObject({ kind: 'solve', targetId: 'richer' });
+    });
+
+    it('has no move at all only when the board is empty', () => {
         expect(advise({ ...base, session: makeSession({ gold: 50 }), ads: [] })).toMatchObject({
             kind: 'buy',
             reason: 'No safe messages are on the board. A potion costs a turn but brings a fresh board and a spare life.',
         });
         expect(advise({ ...base, session: makeSession({ gold: 49 }), ads: [] })).toMatchObject({
             kind: 'none',
-            reason: 'No safe messages are left and a potion is out of reach. You can end the game.',
+            targetId: null,
+            headline: 'No move available',
+            reason: 'The board is empty and a potion is out of reach. You can end the game.',
+            confirm: false,
         });
     });
 
-    it('waits instead of gambling on a bad ad only when gold stays at least 300 afterwards', () => {
-        expect(advise({ ...base, session: makeSession({ gold: 350 }), ads: [bad] })).toMatchObject({
-            kind: 'buy',
-            targetId: 'hpot',
-        });
-        expect(advise({ ...base, session: makeSession({ gold: 349 }), ads: [bad] })).toMatchObject({
+    it('waits with a potion whenever one is affordable rather than gambling', () => {
+        // Turns are free and gold has no use outside the shop, so there is no reserve to keep.
+        for (const gold of [350, 50]) {
+            expect(advise({ ...base, session: makeSession({ gold }), ads: [bad] })).toMatchObject({
+                kind: 'buy',
+                targetId: 'hpot',
+            });
+        }
+        expect(advise({ ...base, session: makeSession({ gold: 49 }), ads: [bad] })).toMatchObject({
             kind: 'solve',
             targetId: 'bad',
         });
@@ -128,7 +136,18 @@ describe('advise', () => {
     it('cannot wait when the shop has no healing potion', () => {
         const shop = SHOP.filter((item) => item.id !== 'hpot');
         const advice = advise({ ...base, shop, session: makeSession({ gold: 1000 }), ads: [trap] });
-        expect(advice.kind).toBe('none');
+        expect(advice).toMatchObject({ kind: 'solve', targetId: 'trap', confirm: true });
+    });
+
+    it('does not claim upgrades improve the odds, because measured they do not', () => {
+        const advice = advise({
+            ...base,
+            purchases: {},
+            session: makeSession({ gold: 150 }),
+            ads: [good],
+        });
+        expect(advice.reason).toContain('roughly doubles the rewards');
+        expect(advice.reason).toContain('do not change your odds');
     });
 
     it('puts healing before upgrading and upgrading before solving', () => {

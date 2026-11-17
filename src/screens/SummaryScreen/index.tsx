@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Illustration } from '../../components/Illustration';
-import { GOAL_SCORE } from '../../domain/tuning';
+import { GOAL_SCORE } from '../../domain/goal';
 import { useGameActions, useGameState } from '../../state/game-context';
 import styles from './SummaryScreen.module.css';
 

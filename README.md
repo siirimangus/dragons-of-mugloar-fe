@@ -57,24 +57,25 @@ On screens narrower than about 800px the layout becomes one column with Board, S
 
 ## Decision tools
 
-The difficulty labels on ads ("Sure thing", "Risky", ...) are turned into numbers, and everything else is computed from them while rendering (nothing derived is stored in state). All constants are in `src/domain/tuning.ts`; they were measured on the live API in the backend project.
+The difficulty labels on ads ("Sure thing", "Risky", ...) are turned into numbers, and everything else is computed from them while rendering (nothing derived is stored in state). Each ad is described exactly once per board by `arrangeBoard`, which filters, sorts and attaches the insight in one pass. The measured constants are in `src/domain/tuning.ts` (calibrated on the live API in the backend project, 40 games, Nov 2026, with the sample behind each number); the 1000-point target lives apart from them in `src/domain/goal.ts`, because it is the brief's goal and not a tuning knob.
 
 | Tool          | How it works                                                                                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Odds          | Looked up from the label, for example Piece of cake 94%, Gamble 55%, Playing with fire 26%, Impossible 0%. An unknown label counts as 30%.                                                        |
-| Value         | `odds x reward - (1 - odds) x 150`, where 150 is what losing a life is worth in gold.                                                                                                             |
+| Odds          | Looked up from the label, for example Piece of cake 94%, Gamble 51%, Playing with fire 23%, Impossible 0%. An unknown label counts as 30%.                                                        |
+| Value         | `odds x reward - (1 - odds) x 150`, where 150 is what losing a life is worth in gold. The card shows both halves ("Expected gain", "Risk cost") next to the total, so the trade-off is visible.   |
 | Risk badge    | Low from 85% odds, medium from 55%, high below that. Shown as text as well as colour.                                                                                                             |
 | Trap detector | An ad whose message matches `/super\s+awesome/i` is a trap: huge reward, top label, but it costs a life. Traps are hidden by default, shown with a warning when you ask, and need "Solve anyway". |
 | Sort          | Value (default), reward, risk (lowest first) or expiry (soonest first). Ties keep the API order.                                                                                                  |
-| Advisor       | One suggestion, evaluated in order: heal, buy the next upgrade, solve the best safe ad, wait with a potion, or fall back to the least bad ad. It never recommends a trap.                         |
+| Advisor       | One suggestion, evaluated in order: heal, buy the next upgrade, solve the best safe ad, wait with a potion, fall back to the least bad ad, or, with nothing else left, solve a trap.              |
 
 The advisor's rules in detail:
 
 1. **Heal:** 2 or fewer lives and at least 50 gold: buy a healing potion.
-2. **Upgrade:** the next upgrade in a fixed cost-effective order (`cs, gas, wax, tricks, wingpot, ch, rf, iron, mtrix, wingpotmax`) that has not been bought, if at least 50 gold is left afterwards.
+2. **Upgrade:** the next upgrade in a fixed cost-effective order (`cs, gas, wax, tricks, wingpot, ch, rf, iron, mtrix, wingpotmax`) that has not been bought, if at least 50 gold is left afterwards. This is where the score comes from: upgrades roughly double the rewards the board offers (they do **not** improve your odds, see below).
 3. **Solve:** the best non-trap ad whose value is at least 0. That ad also gets a "Recommended" badge.
-4. **Wait:** with no safe ad, or only bad ones, a potion buys a fresh board (and a spare life) if enough gold stays in reserve.
-5. **Fallback:** with no gold to wait, the least bad safe ad with a warning, or "No safe move" when only traps remain.
+4. **Wait:** with no safe ad, or only bad ones, a potion buys a fresh board and a spare life. It is worth buying whenever it is affordable, with no gold held back: turns are free and gold has no use outside the shop. (The backend measured this at about +400 points a game against keeping a reserve.)
+5. **Fallback:** with no gold for a potion, the least bad safe ad, with a warning.
+6. **Last resort:** when only traps are left and a potion is out of reach, solve a trap. It almost certainly costs a life, but the turn only advances when you act, so nothing else refreshes the board; standing still would freeze the game. The advisor asks for confirmation first, and the recommended trap stays on the board even while "Hide trap ads" is ticked. "No move available" is therefore only reached on a genuinely empty board.
 
 ## Architecture
 
@@ -85,7 +86,7 @@ src/
   components/           GameHeader/, GoalBar/, AdBoard/, AdCard/, AdFilters/, Shop/, ShopItem/,
                         Advisor/, ActivityLog/, ErrorBanner/, Logo/, Illustration/ (artwork)
   state/                game-reducer.ts, game-context.ts, GameProvider.tsx, use-game-actions.ts
-  domain/               types, tuning, odds, value, traps, sort, advisor, shop (pure TypeScript)
+  domain/               types, tuning, goal, odds, value, traps, board, advisor, shop (pure TypeScript)
   api/                  dragons-api.ts (interface), http-dragons-api.ts, schemas.ts (zod),
                         decode.ts, decode-ads.ts, retry.ts, errors.ts
   utils/                format.ts: number formatting shared by components and the advisor
@@ -152,6 +153,9 @@ These were verified against the live API in the backend project and shaped the d
 - **No state endpoint.** Score, gold, lives and turn are only reported in the responses to start, solve and buy, so the reducer is the single source of truth for the header.
 - **Encrypted ads.** After roughly turn 15, ads arrive with `encrypted: 1` (Base64) or `2` (ROT13) and the message, difficulty label and `adId` encoded. Solving with the encoded id answers HTTP 400; the decoded id works. `api/` decodes everything before the app sees it.
 - **Trap ads.** Messages like "Steal super awesome diamond pot from ..." pay 340 to 450 gold, carry top labels and cost a life.
+- **Harder ads pay more, not less.** Measured over 650 live ads (40 fresh games plus a run to level 7), reward rises as the label gets worse: at level 0 "Sure thing" averages 25 gold and "Playing with fire" 43, a Pearson correlation of -0.17 between success chance and reward (-0.19 at level 4 to 7). The board is not handing out easy money; it is the 150-gold life price that makes the safe ad win almost every time. On those same boards the top-value ad is labelled low-risk on 94% of them, which is why the choice can feel made for you. Only once upgrades inflate the rewards (a Gamble at 260 gold against a Sure thing at 40) does the risky side start winning, and the card's "Expected gain" and "Risk cost" columns exist so that moment is visible.
+- **Upgrades scale rewards, not odds.** Dragon level does not change the success rate of a label: the backend compared two 20-game calibration runs, one fully upgraded and one at level 0 throughout, and every one of the ten labels matched within noise. What level changes is the reward on offer, which roughly doubles. Because `reward` is read from each ad as the API sends it, the value calculation picks this up with no level term of its own.
+- **`highScore` is always 0.** Both `/game/start` and `/solve` return the field, but it stayed 0 across every game sampled, even with the score at 214. It is not read, and it is not in `Session`.
 - **Late boards can be all traps.** Any action that advances the turn refreshes the board; a healing potion is the cheapest one, which is why the advisor can recommend "waiting" by buying one.
 - **Every call advances the turn**, including purchases and failed purchases.
 - **Lives are not capped**, and healing potions work at full health.
@@ -212,6 +216,7 @@ Things that were done differently from the obvious route, and why.
 - **Keyboard focus** is not restored after Solve, Buy or Retry: the pressed button is disabled while the request runs and the card may disappear, so focus can fall back to the page. Play still works, but it is tedious.
 - **An identical error shown twice** by two different failing actions, without dismissing in between, is not announced the second time.
 - **The reputation endpoint** (`/investigate/reputation`) is not used.
+- **The life price is a constant, not a model.** `LIFE_VALUE` is 150 gold for the whole game, although a life actually costs 50 gold to replace while a potion is affordable and is priceless on the last one. The backend measured 150 as the better score at live reward scale, so it stays; a situational price would make `Value` less of a restatement of the difficulty label, at some cost in score.
 - **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and further artwork.
 
 ## Credits
