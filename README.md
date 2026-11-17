@@ -4,7 +4,7 @@ A React web app for playing [Dragons of Mugloar](https://dragonsofmugloar.com/) 
 
 On top of the basics it has tools that help you decide: every ad shows its odds, expected value and risk, trap ads are detected and flagged, the board can be sorted, and an advisor panel suggests the next move with a one-click button.
 
-This is the frontend half of an assignment. The backend half, a bot that plays the same game on its own, lives in a separate project (`dragons-of-mugloar-be`) and is where the live API facts used here were measured.
+This is the frontend half of an assignment. The backend half, a bot that plays the same game on its own, lives in a separate project, [dragons-of-mugloar-be](https://github.com/siirimangus/dragons-of-mugloar-be), and is where the live API facts used here were measured.
 
 ## Contents
 
@@ -192,7 +192,7 @@ Things that were done differently from the obvious route, and why.
 - **Repeated results are still announced.** The last-result line is a live region whose text is re-created for every result, so two identical results in a row ("You bought Healing potion." twice) are both read out. It stays visible outside the tab panels on narrow screens.
 - **The last-result banner is boxed only once there is a result.** The live region has to stay mounted for announcements to be reliable, so before the first action it renders as an empty paragraph with no border or padding, rather than an empty box sitting at the top of the screen.
 - **The value breakdown is a CSS-only tooltip.** Its trigger is a real `<button>`, so it is keyboard-reachable, and the panel is tied to it with `aria-describedby`, which a screen reader announces on focus whether or not the panel is visible (it is hidden with `opacity`, which keeps it in the accessibility tree, not `display: none`, which would not). Showing it is pure `:hover`/`:focus-within` with no state, so unlike the confirmations it cannot be dismissed with Escape: moving the pointer or focus away is what closes it. Accepted for a small secondary explanation that obscures nothing.
-- **The game screen is flexbox, not grid.** A hidden flex item leaves no gap behind it, while a grid's named row keeps its gap even with nothing in it. That difference is why the narrow tab layout, which hides three of its four panels at a time, stacks its gaps correctly now.
+- **The game screen's layout is flexbox.** A hidden flex item is removed from layout completely, gap included, which is what the narrow tab layout needs: it shows only one or two of its four panels at a time, and the spacing has to fall between the panels actually on screen. A CSS grid would keep the gap around a named row even with nothing in it.
 - **Focus management.** Opening a confirmation (end game, solve a trap, or follow advice that costs a life) moves focus to the safe choice, closing it returns focus to the button that opened it, and Escape cancels. The advisor's confirmation is tied to the ad it was opened for, so advice that changes underneath it cancels rather than carrying over to a different target. Moving between the game and summary screens focuses the screen heading. These are the only `useEffect`s in the app.
 - **Buy buttons and Solve buttons** keep their short visible text; Solve buttons point at the ad's message with `aria-describedby` so a screen reader can tell them apart, and Buy buttons carry the item name in `aria-label`.
 - **Unavailable cards are not faded.** Fading with `opacity` pushes the text below the 4.5:1 contrast ratio, so unavailable ads use a dashed border and a muted background instead.
@@ -221,7 +221,7 @@ Things that were done differently from the obvious route, and why.
 - **Keyboard focus** is not restored after Solve, Buy or Retry: the pressed button is disabled while the request runs and the card may disappear, so focus can fall back to the page. Play still works, but it is tedious.
 - **An identical error shown twice** by two different failing actions, without dismissing in between, is not announced the second time.
 - **The reputation endpoint** (`/investigate/reputation`) is not used.
-- **The life price is a constant, not a model.** `LIFE_VALUE` is 150 gold for the whole game, although a life actually costs 50 gold to replace while a potion is affordable and is priceless on the last one. The backend measured 150 as the better score at live reward scale, so it stays; a situational price would make `Value` less of a restatement of the difficulty label, at some cost in score.
+- **The life price is a constant, not a model.** `LIFE_VALUE` is 150 gold for the whole game, although a life actually costs 50 gold to replace while a potion is affordable and is priceless on the last one. The backend measured 150 as the better score at live reward scale, which is why it is the value used; a situational price would make `Value` less of a restatement of the difficulty label, at some cost in score.
 - **Out of scope for this version:** the player's own learned odds, score charts, an autopilot button, routing, translations, deployment and further artwork.
 
 ## Credits
