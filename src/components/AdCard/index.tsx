@@ -96,7 +96,7 @@ export function AdCard({ ad, insight, recommended, unavailable, disabled, onSolv
                                     </span>
                                 </span>
                             </dt>
-                            <dd className={styles.value}>{formatValue(insight.value)}</dd>
+                            <dd>{formatValue(insight.value)}</dd>
                         </div>
                         <div>
                             <dt>Risk</dt>
