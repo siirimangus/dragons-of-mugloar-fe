@@ -103,7 +103,6 @@
     gap: var(--space-1);
 }
 
-/* Anchors the tooltip panel to the info button; shown on hover or keyboard focus. */
 .info {
     position: relative;
     display: inline-flex;

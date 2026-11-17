@@ -26,9 +26,6 @@
     color: var(--color-danger);
 }
 
-/* The last-result banner: boxed and colour-coded, so it reads as the headline it is instead of
-   blending into the page background. Only applies combined with .ok/.fail, so a result-less
-   render (before the first action) and the Activity log's own plain-text entries are unaffected. */
 .result.ok,
 .result.fail {
     padding: var(--space-2) var(--space-3);

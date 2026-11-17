@@ -51,7 +51,7 @@ The app talks to `https://dragonsofmugloar.com/api/v2` directly from the browser
 3. **Solve** an ad or **buy** an item. Every action takes one turn and the board refreshes afterwards. While a request is running, every action button is disabled.
 4. **Summary screen.** The game ends when you run out of lives or press **End game** (it asks for confirmation). You see the final score, solved and failed counts, gold spent, turns and items bought, and can play again.
 
-Lives are not capped by the API, so a strong dragon never dies by itself: the game goes on until you end it.
+Lives are not capped by the API itself, but the app caps how many healing potions you can buy in a game (see [Decision tools](#decision-tools)), so a dragon can still run out for good: the game does not necessarily go on until you choose to end it.
 
 On screens narrower than about 800px the layout becomes one column with Board, Shop and Activity tabs. The advisor stays at the top of the Board tab, and the last result stays visible on every tab.
 

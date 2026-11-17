@@ -17,7 +17,6 @@
     flex-wrap: wrap;
 }
 
-/* The logo scales with its box, so it keeps its proportions at any width. */
 .title {
     flex: 0 1 22rem;
     min-width: 0;
