@@ -59,8 +59,15 @@
         display: flex;
     }
 
+    /* align-items is a cross-axis property: on the row layout above, that axis is vertical, and
+       flex-start is what keeps the board's height from stretching the sidebar to match. In this
+       column layout the cross axis is horizontal instead, so the same flex-start shrink-wraps
+       each panel to its own content width rather than the full line - harmless for the board
+       (its ad cards are wide enough to hit the container edge anyway) but it left Advisor, and any
+       panel with short text, narrower than the rest. Stretch is what the column layout needs. */
     .grid {
         flex-direction: column;
+        align-items: stretch;
     }
 
     /* Unwraps the sidebar: its children become direct flex items of .grid again, in document
