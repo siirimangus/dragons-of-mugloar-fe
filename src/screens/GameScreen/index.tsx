@@ -79,9 +79,6 @@ export function GameScreen() {
                     <LastResultStatus lastResult={state.lastResult} firstLogId={state.log[0]?.id} />
                 </div>
                 <div className={styles.grid}>
-                    <div className={styles.advisor} data-active={tab === 'board'}>
-                        <Advisor advice={advice} disabled={disabled} onDo={doAdvice} />
-                    </div>
                     <div className={styles.board} data-active={tab === 'board'}>
                         <AdBoard
                             ads={state.ads}
@@ -92,18 +89,25 @@ export function GameScreen() {
                             onSolve={(adId) => void actions.solveAd(adId)}
                         />
                     </div>
-                    <div className={styles.shop} data-active={tab === 'shop'}>
-                        <Shop
-                            shop={state.shop}
-                            gold={session.gold}
-                            purchases={state.purchases}
-                            advisedItemId={advisedItemId}
-                            disabled={disabled}
-                            onBuy={(itemId) => void actions.buyItem(itemId)}
-                        />
-                    </div>
-                    <div className={styles.activity} data-active={tab === 'activity'}>
-                        <ActivityLog log={state.log} />
+                    {/* One grid cell holding all three, so the board's height never stretches them
+                        apart: a tall board used to leave a big gap below the short Advisor panel. */}
+                    <div className={styles.sidebar}>
+                        <div className={styles.advisor} data-active={tab === 'board'}>
+                            <Advisor advice={advice} disabled={disabled} onDo={doAdvice} />
+                        </div>
+                        <div className={styles.shop} data-active={tab === 'shop'}>
+                            <Shop
+                                shop={state.shop}
+                                gold={session.gold}
+                                purchases={state.purchases}
+                                advisedItemId={advisedItemId}
+                                disabled={disabled}
+                                onBuy={(itemId) => void actions.buyItem(itemId)}
+                            />
+                        </div>
+                        <div className={styles.activity} data-active={tab === 'activity'}>
+                            <ActivityLog log={state.log} />
+                        </div>
                     </div>
                 </div>
             </main>

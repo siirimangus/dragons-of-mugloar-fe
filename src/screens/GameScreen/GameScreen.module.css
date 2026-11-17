@@ -26,10 +26,7 @@
     display: grid;
     gap: var(--space-4);
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    grid-template-areas:
-        'board advisor'
-        'board shop'
-        'board activity';
+    grid-template-areas: 'board sidebar';
     align-items: start;
     padding: 0 var(--space-4) var(--space-6);
 }
@@ -38,16 +35,15 @@
     grid-area: board;
 }
 
-.advisor {
-    grid-area: advisor;
-}
-
-.shop {
-    grid-area: shop;
-}
-
-.activity {
-    grid-area: activity;
+/* A single grid cell for all three: a CSS grid row stretches to fit the tallest item sharing it,
+   so three separate rows here would each grow to match the board's height, leaving a big blank
+   gap below each short section. Stacking them in one flex column sizes each to its own content. */
+.sidebar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
 }
 
 @media (max-width: 800px) {
@@ -64,7 +60,25 @@
             'activity';
     }
 
-    .grid > [data-active='false'] {
+    /* Unwraps the sidebar: its children become direct grid items again, placed by the grid-area
+       each already carries below, so the board/shop/activity tab order still works. */
+    .sidebar {
+        display: contents;
+    }
+
+    .advisor {
+        grid-area: advisor;
+    }
+
+    .shop {
+        grid-area: shop;
+    }
+
+    .activity {
+        grid-area: activity;
+    }
+
+    .grid [data-active='false'] {
         display: none;
     }
 }
