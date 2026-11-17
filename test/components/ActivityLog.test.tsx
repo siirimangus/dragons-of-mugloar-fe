@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import styles from '../../src/components/ActivityLog/ActivityLog.module.css';
 import { ActivityLog, LastResultStatus } from '../../src/components/ActivityLog';
 
 describe('ActivityLog', () => {
@@ -17,6 +18,22 @@ describe('ActivityLog', () => {
     it('keeps the live region mounted when there is no result yet', () => {
         render(<LastResultStatus lastResult={null} firstLogId={undefined} />);
         expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    });
+
+    it('boxes the result as a banner, but only once there is one to show', () => {
+        const { rerender } = render(<LastResultStatus lastResult={null} firstLogId={undefined} />);
+        const status = screen.getByRole('status');
+        expect(status).not.toHaveClass(styles.ok!);
+        expect(status).not.toHaveClass(styles.fail!);
+
+        rerender(
+            <LastResultStatus
+                lastResult={{ text: 'You successfully solved the mission!', success: true }}
+                firstLogId={1}
+            />,
+        );
+        expect(status).toHaveClass(styles.result!);
+        expect(status).toHaveClass(styles.ok!);
     });
 
     it('re-announces a repeated result with identical text', () => {

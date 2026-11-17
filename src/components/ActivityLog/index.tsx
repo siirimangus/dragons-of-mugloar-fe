@@ -10,7 +10,10 @@ type StatusProps = {
 /** The always-mounted live region for the latest result. */
 export function LastResultStatus({ lastResult, firstLogId }: StatusProps) {
     return (
-        <p role="status" className={lastResult?.success === false ? styles.fail : styles.ok}>
+        <p
+            role="status"
+            className={`${styles.result} ${lastResult ? (lastResult.success ? styles.ok : styles.fail) : ''}`}
+        >
             {lastResult && <span key={firstLogId}>{lastResult.text}</span>}
         </p>
     );
